@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.utils import timezone
 from datetime import timedelta, datetime
 
 
@@ -10,16 +9,16 @@ class Habit(models.Model):
     frequency = models.IntegerField(default= 1)
     number_of_times = models.IntegerField(default=1)
     period = models.CharField(max_length=255)
-    goal = models.IntegerField()
+    goal = models.IntegerField(default=90)
     num_of_tasks = models.FloatField()
-    notes = models.CharField(max_length=255, default='empty')
+    notes = models.CharField(max_length=255, default=None)
     creation_time = models.DateTimeField(auto_now_add=True)
     completion_date = models.DateTimeField(null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
-
     def save(self, *args, **kwargs):
+        self.name = self.name.lower()
         num = 1  # Initialize 'num' with a default value
         if self.period == 'daily':
             num = 1
@@ -63,8 +62,3 @@ class Task(models.Model):
         for i in range(1, habit.num_of_tasks + 1):
             create_date += timedelta(hours=time_jump*24)
             cls.objects.create(habit=habit, due_date=create_date, task_number=i, period_col=period_col)
-
-
-
-
-

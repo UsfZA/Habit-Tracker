@@ -45,10 +45,13 @@
                             <label for="{{ form.goal.id_for_label }}" class="col-sm-3 col-form-label text-right">Goal:</label>
                             <div class="col-sm-9">
                                 {{ form.goal }}
+                                {% for error in form.goal.errors %}
+                                <small class="text-danger">{{ error }}</small>
+                                {% endfor %}
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="{{ form.goal.id_for_label }}" class="col-sm-3 col-form-label text-right">Notes:</label>
+                            <label for="{{ form.notes.id_for_label }}" class="col-sm-3 col-form-label text-right">Notes:</label>
                             <div class="col-sm-9">
                                 {{ form.notes }}
                             </div>

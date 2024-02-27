@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import login, authenticate
 from .forms import UserRegisterForm
+from django.contrib.auth.decorators import login_required
+from .models import Profile
 
 
 
@@ -23,3 +25,8 @@ def register(request):
         form = UserRegisterForm()
     return render(request, 'Users/register.html', {'form': form})
 
+@login_required
+def profile(request):
+    profile_instance, create = Profile.objects.get_or_create(user=request.user)
+ 
+    return render(request, 'Users/profile.html', {'profile': profile_instance})
