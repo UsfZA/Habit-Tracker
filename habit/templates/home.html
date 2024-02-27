@@ -6,22 +6,82 @@
     <!-- Add Habit Button -->
     <a class="btn btn-primary mb-4" href="{% url 'habit-creation' %}">Add Habit</a>
 
-    <!-- Display Tasks -->
-    {% for task in tasks %}
-        <div class="card custom-margin">
-            <div class="card-body">
-                <input type="checkbox" id="task_{{ task.id }}" name="task_{{ task.id }}">
-                <label class="form-check-label" for="task_{{ task.id }}">
-                    {{ task.habit.name }} - Task {{ task.task_number }}
-                </label>
-                <p class="mt-2">Due: {{ task.due_date|date:"F d, Y" }} at {{ task.due_date|date:"g:i A" }}</p>
-                <p>Priority: {{ task.habit.priority }}</p>
-                
-                <!-- Mark as Complete and Snooze Buttons -->
-                <button class="btn btn-success mr-2">Mark as Complete</button>
-                <button class="btn btn-warning">Snooze</button>
-            </div>
-        </div>
-    {% endfor %}
-{% endblock %}
+    <!-- Buttons for Daily, Weekly, and Monthly Tasks -->
+    <div class="mb-4"> <!-- Add margin-bottom for spacing -->
+        <button class="btn btn-info" onclick="showTasks('daily')">Daily Tasks</button>
+        <button class="btn btn-warning" onclick="showTasks('weekly')">Weekly Tasks</button>
+        <button class="btn btn-danger" onclick="showTasks('monthly')">Monthly Tasks</button>
+    </div>
 
+    <!-- Display Daily Tasks -->
+    <div id="daily-tasks" style="display: none;" class="card-deck mt-4">
+        {% for task in daily_tasks %}
+            <div class="card">
+                <div class="card-body">
+                    <input type="checkbox" id="task_{{ task.id }}" name="task_{{ task.id }}">
+                    <label class="form-check-label" for="task_{{ task.id }}">
+                        {{ task.habit.name }} - Task {{ task.task_number }}
+                    </label>
+                    <p class="mt-2">Due: {{ task.due_date|date:"F d, Y" }} at {{ task.due_date|date:"g:i A" }}</p>
+                    <p>Priority: {{ task.habit.priority }}</p>
+                    
+                    <!-- Mark as Complete and Snooze Buttons -->
+                    <button class="btn btn-success mr-2">Mark as Complete</button>
+                    <button class="btn btn-warning">Snooze</button>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Display Weekly Tasks -->
+    <div id="weekly-tasks" style="display: none;" class="card-deck mt-4">
+        {% for task in weekly_tasks %}
+            <div class="card">
+                <div class="card-body">
+                    <input type="checkbox" id="task_{{ task.id }}" name="task_{{ task.id }}">
+                    <label class="form-check-label" for="task_{{ task.id }}">
+                        {{ task.habit.name }} - Task {{ task.task_number }}
+                    </label>
+                    <p class="mt-2">Due: {{ task.due_date|date:"F d, Y" }} at {{ task.due_date|date:"g:i A" }}</p>
+                    <p>Priority: {{ task.habit.priority }}</p>
+                    
+                    <!-- Mark as Complete and Snooze Buttons -->
+                    <button class="btn btn-success mr-2">Mark as Complete</button>
+                    <button class="btn btn-warning">Snooze</button>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Display Monthly Tasks -->
+    <div id="monthly-tasks" style="display: none;" class="card-deck mt-4">
+        {% for task in monthly_tasks %}
+            <div class="card">
+                <div class="card-body">
+                    <input type="checkbox" id="task_{{ task.id }}" name="task_{{ task.id }}">
+                    <label class="form-check-label" for="task_{{ task.id }}">
+                        {{ task.habit.name }} - Task {{ task.task_number }}
+                    </label>
+                    <p class="mt-2">Due: {{ task.due_date|date:"F d, Y" }} at {{ task.due_date|date:"g:i A" }}</p>
+                    <p>Priority: {{ task.habit.priority }}</p>
+                    
+                    <!-- Mark as Complete and Snooze Buttons -->
+                    <button class="btn btn-success mr-2">Mark as Complete</button>
+                    <button class="btn btn-warning">Snooze</button>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        function showTasks(period) {
+            // Hide all task sections
+            document.getElementById('daily-tasks').style.display = 'none';
+            document.getElementById('weekly-tasks').style.display = 'none';
+            document.getElementById('monthly-tasks').style.display = 'none';
+
+            // Show the selected task section
+            document.getElementById(`${period}-tasks`).style.display = 'block';
+        }
+    </script>
+{% endblock %}

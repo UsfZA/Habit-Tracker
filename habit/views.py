@@ -31,11 +31,17 @@ def add_habit(request):
 def home_view(request):
     user_id = request.user.id
     now = datetime.now()
-    twenty_four_hours_ago = now - timedelta(hours=24)
+    twenty_four_hours_ago = now + timedelta(hours=24)
+    seven_days_ago = now + timedelta(hours=168)
+    thirty_days_ago = now + timedelta(hours=720)
     
-    tasks = Task.objects.filter(habit__user_id=user_id, due_date__range=(twenty_four_hours_ago, now))
+    daily_tasks = Task.objects.filter(habit__user_id=user_id, period_col='daily', due_date__range=(now, twenty_four_hours_ago))
+    weekly_tasks = Task.objects.filter(habit__user_id=user_id, period_col='weekly', due_date__range=(now, seven_days_ago))
+    monthly_tasks = Task.objects.filter(habit__user_id=user_id, period_col='monthly', due_date__range=(now, thirty_days_ago))
     context = {
-        'tasks' : tasks
+        'daily_tasks' : daily_tasks,
+        'weekly_tasks' : weekly_tasks,
+        'monthly_tasks' : monthly_tasks
     }
     return render(request, 'home.html', context)
 
