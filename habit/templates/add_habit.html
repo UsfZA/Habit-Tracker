@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <h2 class="card-header text-center">Create a New Habit</h2>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="form-group row">
+                            <label for="{{ form.name.id_for_label }}" class="col-sm-3 col-form-label text-right">Habit Name:</label>
+                            <div class="col-sm-9">
+                                {{ form.name }}
+                                {% for error in form.name.errors %}
+                                    <small class="text-danger">{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="{{ form.frequency.id_for_label }}" class="col-sm-3 col-form-label text-right">Frequency:</label>
+                            <div class="col-sm-2">
+                                {{ form.frequency }}
+                                {% for error in form.frequency.errors %}
+                                    <small class="text-danger">{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                            <label for="{{ form.number_of_times.id_for_label }}" class="col-sm-2 col-form-label text-right">times in</label>
+                            <div class="col-sm-2">
+                                {{ form.number_of_times }}
+                                {% for error in form.number_of_times.errors %}
+                                    <small class="text-danger">{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                            <div class="col-sm-3">
+                                {{ form.period }}
+                                {% for error in form.period.errors %}
+                                    <small class="text-danger">{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="{{ form.goal.id_for_label }}" class="col-sm-3 col-form-label text-right">Goal:</label>
+                            <div class="col-sm-9">
+                                {{ form.goal }}
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="{{ form.goal.id_for_label }}" class="col-sm-3 col-form-label text-right">Notes:</label>
+                            <div class="col-sm-9">
+                                {{ form.notes }}
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-sm-9 offset-sm-3">
+                                <button type="submit" class="btn btn-primary btn-block">Create Habit</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
