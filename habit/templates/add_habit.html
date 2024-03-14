@@ -27,12 +27,6 @@
                                 {% endfor %}
                             </div>
                             <label for="{{ form.number_of_times.id_for_label }}" class="col-sm-2 col-form-label text-right">times in</label>
-                            <div class="col-sm-2">
-                                {{ form.number_of_times }}
-                                {% for error in form.number_of_times.errors %}
-                                    <small class="text-danger">{{ error }}</small>
-                                {% endfor %}
-                            </div>
                             <div class="col-sm-3">
                                 {{ form.period }}
                                 {% for error in form.period.errors %}

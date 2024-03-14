@@ -14,12 +14,17 @@ class Profile(models.Model):
     #completed_habit = models.IntegerField(default=0)
     #achievements = models.ImageField()
     def save(self, *args, **kwargs):
+        """
+        Override the save method to update profile fields based on the associated user and habits.
+
+        Args:
+            *args: Additional arguments.
+            **kwargs: Additional keyword arguments.
+        """
         self.full_name = f"{self.user.first_name} {self.user.last_name}"
         self.active_habit = Habit.objects.filter(user=self.user).count()
         self.email = self.user.email
         self.date_joined = self.user.date_joined
-
         #self.completed_habit = 
-        
         super().save(*args, **kwargs)
 

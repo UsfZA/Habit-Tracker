@@ -27,6 +27,15 @@ def register(request):
 
 @login_required
 def profile(request):
+    """
+    View function to display user profile.
+
+    Args:
+        request (HttpRequest): The HTTP request.
+
+    Returns:
+        HttpResponse: The HTTP response.
+    """
     profile_instance, create = Profile.objects.get_or_create(user=request.user)
  
     return render(request, 'Users/profile.html', {'profile': profile_instance})

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Active Habits</h1>
+    <div class="row">
+        {% for habit in active_habits %}
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ habit.name }}</h5>
+                    <p class="card-text">
+                        <strong>Started:</strong> {{ habit.creation_time|date:"F d, Y" }} at {{ habit.creation_time|date:"g:i A" }}
+                    </p>
+                    <p class="card-text">
+                        <strong>Completion date:</strong> {{ habit.completion_date|date:"F d, Y" }} at {{ habit.completion_date|date:"g:i A" }}
+                    </p>
+                    <div class="row">
+                        <div class="col text-left">
+                            <p class="progress-text"><strong>Progress:</strong></p>
+                        </div>
+                        <div class="col text-right">
+                            <p class="progress-text">{{ habit.progress_percentage|floatformat:"2" }}%</p>
+                        </div>
+                    </div>
+                    <div class="progress mt-1 mb-3">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ habit.progress_percentage|floatformat:"2" }}%;" aria-valuenow="{{ habit.progress_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+
+

@@ -1,16 +1,17 @@
 from django.db import models
 from django.contrib.auth.models import User
 from datetime import timedelta, datetime
+from django.utils import timezone
 
 
 
 class Habit(models.Model):
     name = models.CharField(max_length=255)
     frequency = models.IntegerField(default= 1)
-    number_of_times = models.IntegerField(default=1)
     period = models.CharField(max_length=255)
     goal = models.IntegerField(default=90)
     num_of_tasks = models.FloatField()
+    num_of_completed_tasks = models.FloatField(default = 0)
     notes = models.CharField(max_length=255, default=None)
     creation_time = models.DateTimeField(auto_now_add=True)
     completion_date = models.DateTimeField(null=True, blank=True)
@@ -18,22 +19,27 @@ class Habit(models.Model):
 
 
     def save(self, *args, **kwargs):
+        """
+        Override the save method to calculate tasks number and completion_date.
+
+        """
         self.name = self.name.lower()
-        num = 1  # Initialize 'num' with a default value
+        num_of_period = 1 
         if self.period == 'daily':
-            num = 1
+            num_of_period = 1
         elif self.period == 'weekly':
-            num = 7
+            num_of_period = 7
         elif self.period == 'monthly':
-            num = 30
+            num_of_period = 30
         elif self.period == 'annual':
-            num = 365
+            num_of_period = 365
 
+        # Calculate the number of tasks needed to achieve the habit goal
         if not self.num_of_tasks:
-            self.num_of_tasks = ((self.goal // (num * self.number_of_times)) * self.frequency)
+            self.num_of_tasks = ((self.goal // num_of_period) * self.frequency)
 
+        # Calculate the completion date based on the goal
         if not self.completion_date:
-            # Check if self.completion_date is None before performing addition
             self.completion_date = datetime.now() + timedelta(hours=self.goal*24)
 
         super().save(*args, **kwargs)
@@ -42,15 +48,37 @@ class Habit(models.Model):
 
 class Task(models.Model):
     habit = models.ForeignKey(Habit, on_delete=models.CASCADE)
+    start_date = models.DateTimeField(null=True, blank=True)
     due_date = models.DateTimeField(null=True, blank=True)
     task_number = models.IntegerField(default=77)
     period_col = models.CharField(max_length=255, default='nontype')
+    task_status = models.CharField(max_length=255, default='In progress')
+
+
+    def save(self, *args, **kwargs):
+        """
+        Override the save method to mark tasks as failed if due_date is passed
+        and the task is not marked as completed
+        
+        """
+        if self.due_date:
+            if self.due_date < timezone.now() and self.task_status != 'Completed':
+                self.task_status = 'failed'
+
+        super().save(*args, **kwargs)
+
 
     @classmethod
     def create_due_dates(cls, habit):
+        """
+        Populate Task table with habit tasks and thier due dates 
+
+        """
+        # Calculate the time between a tasks
         time_jump = habit.goal / habit.num_of_tasks
-        create_date = habit.creation_time
         time_skip = timedelta(hours=time_jump*24)
+        
+        # Determine the periodicity of tasks
         period_col = ''
         if time_skip == timedelta(hours=24):
             period_col = 'daily'
@@ -59,6 +87,17 @@ class Task(models.Model):
         elif time_skip>timedelta(hours=168) and  time_skip<= timedelta(hours=720):
             period_col = 'monthly'
 
+        # Initialize start and due dates for tasks
+        due_date = start_date = habit.creation_time
+
+        # Increment the due_date and start_date by time_skip, skip the first iteration for start_date
         for i in range(1, habit.num_of_tasks + 1):
-            create_date += timedelta(hours=time_jump*24)
-            cls.objects.create(habit=habit, due_date=create_date, task_number=i, period_col=period_col)
+            due_date += timedelta(hours=time_jump*24)
+            if i == 1:
+                current_start_date = start_date
+            else:
+                current_start_date += timedelta(hours=time_jump * 24)
+
+            cls.objects.create(habit=habit, due_date=due_date, task_number=i, period_col=period_col, start_date=current_start_date)
+
+

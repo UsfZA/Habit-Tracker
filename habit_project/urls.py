@@ -28,5 +28,6 @@ urlpatterns = [
     path('logout', auth_views.LogoutView.as_view(template_name='Users/logout.html'), name='logout'),
     path('home/', habit_views.home_view, name='habit-home'),
     path('addHabit/', habit_views.add_habit, name='habit-creation'),
-    path('about/', habit_views.about, name='habit-about')
+    path('about/', habit_views.about, name='habit-about'),
+    path('ActiveHabits/', habit_views.active_habits, name = 'active_habits')
 ]
