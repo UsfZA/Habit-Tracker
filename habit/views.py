@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import HabitForm
-from .models import Task, Habit
+from .models import Task, Habit, Streak
 from django.contrib.auth.decorators import login_required
 from datetime import datetime, timedelta
 from Users.utils import update_profile
@@ -21,6 +21,12 @@ def home_view(request):
     Returns:
         HttpResponse: The HTTP response.
     """
+    # update task status, current streak, longest streak
+    user_id = request.user.id
+    updated_habit_ids = Task.update_task_statuses(user_id=user_id)
+    Streak.update_streak(updated_habit_ids)
+
+
     if request.method == 'POST':
         task_id = request.POST.get('task_id')
         habit_id = request.POST.get('habit_id')
@@ -33,8 +39,13 @@ def home_view(request):
 
             if task and task_status == 'Completed':
                 habit = Habit.objects.get(id=habit_id)
+                streak = Streak.objects.get(habit_id=habit_id)
+                streak.current_streak += 1
+                streak.num_of_completed_tasks += 1
                 habit.num_of_completed_tasks += 1
+
                 habit.save()
+                streak.save()
 
                 messages.success(request, f'Task marked as done')
 
@@ -96,11 +107,10 @@ def add_habit(request):
             habit.user = request.user
             habit.save()
             
-            # Create tasks for the habit
-            task_instance = Task(habit=habit)
-            task_instance.create_due_dates(habit)
-            task_instance.save()
-
+            # Create tasks with their due and start dates for the habit
+            Task.create_due_dates(habit)
+            Streak.initiate_streak(habit)
+            
             # Update user's profile
             update_profile(request.user)
             
@@ -138,6 +148,20 @@ def active_habits(request):
         'active_habits' : active_habits
     }
     return render(request, 'active_habits.html', context)
+
+
+def habit_detail(request , habit_id):
+    habit = Habit.objects.get(pk=habit_id)
+    tasks = Task.objects.filter(habit_id=habit_id)
+    streak = Streak.objects.get(habit_id=habit_id)
+
+    context = {
+        'habit' : habit,
+        'tasks' : tasks,
+        'streak' : streak
+    }
+
+    return render(request, 'habit_details.html', context)
 
 def about(request):
     """

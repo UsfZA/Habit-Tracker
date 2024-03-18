@@ -26,6 +26,7 @@
                     <div class="progress mt-1 mb-3">
                         <div class="progress-bar bg-success" role="progressbar" style="width: {{ habit.progress_percentage|floatformat:"2" }}%;" aria-valuenow="{{ habit.progress_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
+                    <a class="btn btn-danger mb-2" href="{% url 'habit_detail' habit_id=habit.id %}">More Details</a>
                 </div>
             </div>
         </div>

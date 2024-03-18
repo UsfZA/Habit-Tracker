@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-3">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card">
+                <h1 class="card-header text-center">Habit Infos</h1>
+                <div class="card-body">
+                    <p><i class="bi bi-person"></i> <strong>Habit Name:</strong> {{ habit.name }}</p>
+
+                    <p><i class="bi bi-calendar"></i> <strong>Started:</strong> {{ habit.creation_time|date:"F d, Y" }} at {{ habit.creation_time|date:"g:i A" }}</p>
+                    <p><i class="bi bi-calendar"></i> <strong>Completion date:</strong> {{ habit.completion_date|date:"F d, Y" }} at {{ habit.completion_date|date:"g:i A" }}</p>
+
+                    <h3 class="mt-4">Progress</h3>
+                    <p><i class="bi bi-check2"></i> <strong>Total Tasks:</strong> {{ habit.num_of_tasks }}</p>
+                    <p><i class="bi bi-check2"></i> <strong>Completed Tasks:</strong> {{ habit.num_of_completed_tasks }}</p>
+
+                    <p><i class="bi bi-check2"></i> <strong>Current Streak:</strong> {{ streak.current_streak }}</p>
+
+                    <h3 class="mt-4">Achievements</h3>
+                    <ul>
+                        {% for achievement in profile.achievements %}
+                            <li><i class="bi bi-trophy"></i> {{ achievement }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

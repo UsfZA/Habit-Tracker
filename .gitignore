@@ -121,3 +121,10 @@ venv.bak/
 
 # mypy 
 .mypy_cache/ 
+
+#managments commands
+management
+
+#logs
+django2.log.txt
+django3.log.txt

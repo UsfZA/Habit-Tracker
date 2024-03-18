@@ -134,3 +134,23 @@ LOGIN_REDIRECT_URL = 'habit-home'
 LOGIN_URL = ''
 
 
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'C:\\Users\\iTech\\Desktop\\habit_project\\django3.log.txt', 
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
