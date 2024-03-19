@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from datetime import timedelta, datetime
 from django.utils import timezone
+from .utils import periodicty_number
 
 
 
@@ -18,21 +19,16 @@ class Habit(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
+
     def save(self, *args, **kwargs):
         """
         Override the save method to calculate tasks number and completion_date.
 
         """
         self.name = self.name.lower()
-        num_of_period = 1 
-        if self.period == 'daily':
-            num_of_period = 1
-        elif self.period == 'weekly':
-            num_of_period = 7
-        elif self.period == 'monthly':
-            num_of_period = 30
-        elif self.period == 'annual':
-            num_of_period = 365
+
+        # assign a number to periodicity 
+        num_of_period = periodicty_number(self.period)
 
         # Calculate the number of tasks needed to achieve the habit goal
         if not self.num_of_tasks:
@@ -51,7 +47,6 @@ class Task(models.Model):
     start_date = models.DateTimeField(null=True, blank=True)
     due_date = models.DateTimeField(null=True, blank=True)
     task_number = models.IntegerField()
-    period_col = models.CharField(max_length=255)
     task_status = models.CharField(max_length=255)
 
 
@@ -83,14 +78,6 @@ class Task(models.Model):
         time_jump = habit.goal / habit.num_of_tasks
         time_skip = timedelta(hours=time_jump*24)
         
-        # Determine the periodicity of tasks
-        period_col = ''
-        if time_skip == timedelta(hours=24):
-            period_col = 'daily'
-        elif time_skip > timedelta(hours=24) and time_skip < timedelta(hours=192):
-            period_col = 'weekly'
-        elif time_skip > timedelta(hours=168) and time_skip <= timedelta(hours=720):
-            period_col = 'monthly'
 
         # Initialize start and due dates for tasks
         due_date = start_date = habit.creation_time
@@ -98,18 +85,17 @@ class Task(models.Model):
 
         # Increment the due_date and start_date by time_skip, skip the first iteration for start_date
         for i in range(1, habit.num_of_tasks+1):
-            due_date += timedelta(hours=time_jump*24)
+            due_date += time_skip
             if i == 1:
                 current_start_date = start_date
             else:
-                current_start_date += timedelta(hours=time_jump * 24)
-
-            cls.objects.create(habit=habit, due_date=due_date, task_number=i, period_col=period_col, task_status=default, start_date=current_start_date)
+                current_start_date += time_skip
+            cls.objects.create(habit=habit, due_date=due_date, task_number=i, task_status=default, start_date=current_start_date)
 
 
 
 class Streak(models.Model):
-    habit = models.ForeignKey(Habit, on_delete=models.CASCADE)
+    habit = models.ForeignKey(Habit, on_delete=models.CASCADE, related_name='streak')
     num_of_completed_tasks = models.IntegerField(default = 0)
     num_of_failed_tasks = models.IntegerField(default = 0)
     longest_streak = models.IntegerField(default = 0)

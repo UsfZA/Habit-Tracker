@@ -2,12 +2,14 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import HabitForm
 from .models import Task, Habit, Streak
+from .utils import calculate_progress
 from django.contrib.auth.decorators import login_required
-from datetime import datetime, timedelta
+from datetime import timedelta
 from Users.utils import update_profile
 from django.http import JsonResponse
 from django.db.models import F
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 
 @login_required
@@ -25,6 +27,13 @@ def home_view(request):
     user_id = request.user.id
     updated_habit_ids = Task.update_task_statuses(user_id=user_id)
     Streak.update_streak(updated_habit_ids)
+
+    user_full_name = ""
+    try:
+        user = User.objects.get(id=user_id)
+        user_full_name = user.get_full_name()
+    except User.DoesNotExist:
+        pass
 
 
     if request.method == 'POST':
@@ -54,7 +63,6 @@ def home_view(request):
         except Task.DoesNotExist:
             return JsonResponse({'status': 'error', 'message': 'Task not found'})
 
-    user_id = request.user.id
     now = timezone.now()
     twenty_four_hours = now + timedelta(hours=24)
 
@@ -76,6 +84,7 @@ def home_view(request):
     context = {
         'daily_tasks' : due_today_tasks,
         'weekly_tasks' : available_tasks,
+        'user_full_name' : user_full_name.split()[0].capitalize()
     }
     
     return render(request, 'home.html', context)
@@ -135,17 +144,22 @@ def active_habits(request):
         HttpResponse: The HTTP response.
     """
     user_id = request.user.id
-    active_habits = Habit.objects.filter(user_id=user_id, num_of_tasks__gt=F('num_of_completed_tasks'))
+    all_active_habits = Habit.objects.filter(user_id=user_id, completion_date__gte=timezone.now()).prefetch_related('streak')
+    daily_active_habits = all_active_habits.filter(period='daily')
+    monthly_active_habits = all_active_habits.filter(period='monthly')
+    weekly_active_habits = all_active_habits.filter(period='weekly')
 
     # Calculate progress percentage for each active habit
-    for habit in active_habits:
-        if habit.num_of_tasks > 0:
-            habit.progress_percentage = round((habit.num_of_completed_tasks / habit.num_of_tasks) * 100, 2)
-        else:
-            habit.progress_percentage = 0.0
+    calculate_progress(all_active_habits)
+    calculate_progress(daily_active_habits)
+    calculate_progress(monthly_active_habits)
+    calculate_progress(weekly_active_habits)
 
     context = {
-        'active_habits' : active_habits
+        'active_habits': all_active_habits,
+        'monthly_active_habits': monthly_active_habits,
+        'weekly_active_habits': weekly_active_habits,
+        'daily_active_habits': daily_active_habits,
     }
     return render(request, 'active_habits.html', context)
 

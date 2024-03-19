@@ -1,39 +1,79 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
     <h1 class="my-4">Active Habits</h1>
-    <div class="row">
-        {% for habit in active_habits %}
-        <div class="col-md-6 mb-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">{{ habit.name }}</h5>
-                    <p class="card-text">
-                        <strong>Started:</strong> {{ habit.creation_time|date:"F d, Y" }} at {{ habit.creation_time|date:"g:i A" }}
-                    </p>
-                    <p class="card-text">
-                        <strong>Completion date:</strong> {{ habit.completion_date|date:"F d, Y" }} at {{ habit.completion_date|date:"g:i A" }}
-                    </p>
+    <!-- Buttons for Daily, Weekly, Monthly, and All Tasks -->
+    <div class="mb-4"> <!-- Add margin-bottom for spacing -->
+        <button class="btn btn-primary" onclick="showTasks('all')">All</button>
+        <button class="btn btn-warning" onclick="showTasks('daily')">Daily</button>
+        <button class="btn btn-warning" onclick="showTasks('weekly')">Weekly</button>
+        <button class="btn btn-warning" onclick="showTasks('monthly')">Monthly</button>
+    </div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-md-11">
+                <!-- Display All Habits -->
+                <div id="all-active-habits">
                     <div class="row">
-                        <div class="col text-left">
-                            <p class="progress-text"><strong>Progress:</strong></p>
-                        </div>
-                        <div class="col text-right">
-                            <p class="progress-text">{{ habit.progress_percentage|floatformat:"2" }}%</p>
-                        </div>
+                        {% for habit in active_habits %}
+                            {% include 'habit_card.html' %}
+                        {% endfor %}
                     </div>
-                    <div class="progress mt-1 mb-3">
-                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ habit.progress_percentage|floatformat:"2" }}%;" aria-valuenow="{{ habit.progress_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                    <a class="btn btn-danger mb-2" href="{% url 'habit_detail' habit_id=habit.id %}">More Details</a>
                 </div>
+                <!-- Display Daily Habits -->
+                <div id="daily-active-habits">
+                    <div class="row">
+                        {% for habit in daily_active_habits %}
+                            {% include 'habit_card.html' %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <!-- Display Weekly Habits -->
+                <div id="weekly-active-habits">
+                    <div class="row">
+                        {% for habit in weekly_active_habits %}
+                            {% include 'habit_card.html' %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <!-- Display Monthly Habits -->
+                <div id="monthly-active-habits">
+                    <div class="row">
+                        {% for habit in monthly_active_habits %}
+                            {% include 'habit_card.html' %}
+                        {% endfor %}
+                    </div>
+                </div>
+
             </div>
         </div>
-        {% endfor %}
     </div>
-</div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Display all habits by default
+            showTasks('all');
+        });
+
+        function showTasks(period) {
+            // Hide all habit sections
+            document.getElementById('all-active-habits').style.display = 'none';
+            document.getElementById('daily-active-habits').style.display = 'none';
+            document.getElementById('weekly-active-habits').style.display = 'none';
+            document.getElementById('monthly-active-habits').style.display = 'none';
+
+            // Remove 'active' class from all buttons
+            var buttons = document.querySelectorAll('.btn');
+            buttons.forEach(function(button) {
+                button.classList.remove('active');
+            });
+
+            // Show the selected habit section
+            document.getElementById(`${period}-active-habits`).style.display = 'block';
+
+            // Add 'active' class to the clicked button
+            document.querySelector(`button[data-period="${period}"]`).classList.add('active');
+        }
+    </script>
 {% endblock %}
-
-
-

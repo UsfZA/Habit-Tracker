@@ -1,20 +1,20 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1 class="mt-4">Welcome to Your Habit Dashboard</h1>
-    
+    <h1 class="mt-4">Welcome {{ user_full_name }}</h1>
+
     <!-- Add Habit Button -->
     <a class="btn btn-primary mb-4" href="{% url 'habit-creation' %}">Add Habit</a>
     <a class="btn btn-danger mb-4" href="{% url 'active_habits' %}">Active Habits</a>
 
     <!-- Buttons for Daily, Weekly, and Monthly Tasks -->
     <div class="mb-4"> <!-- Add margin-bottom for spacing -->
-        <button class="btn btn-info" onclick="showTasks('daily')">Due Today Tasks</button>
+        <button class="btn btn-info active" onclick="showTasks('daily')">Due Today Tasks</button>
         <button class="btn btn-warning" onclick="showTasks('weekly')">Available Tasks</button>
     </div>
 
     <!-- Display Daily Tasks -->
-    <div id="daily-tasks" style="display: none;" class="card-deck mt-4">
+    <div id="daily-tasks" class="card-deck mt-4">
         {% for task in daily_tasks %}
             <div class="card">
                 <div class="card-body">
@@ -32,7 +32,7 @@
                         
                         <!-- Mark as Complete and Snooze Buttons -->
                         <button type="submit" class="btn btn-success mr-2">Mark as Complete</button>
-                        <button class="btn btn-warning">Snooze</button>
+                        <!-- <button class="btn btn-warning">Snooze</button> -->
                     </form>
                 </div>
             </div>
@@ -58,23 +58,35 @@
                         
                         <!-- Mark as Complete and Snooze Buttons -->
                         <button type="submit" class="btn btn-success mr-2">Mark as Complete</button>
-                        <button class="btn btn-warning">Snooze</button>
+                        <!-- <button class="btn btn-warning">Snooze</button> -->
                     </form>
                 </div>
             </div>
         {% endfor %}
     </div>
 
-
-
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Display due today tasks by default
+            showTasks('daily');
+        });
+
         function showTasks(period) {
             // Hide all task sections
             document.getElementById('daily-tasks').style.display = 'none';
             document.getElementById('weekly-tasks').style.display = 'none';
 
+            // Remove 'active' class from all buttons
+            var buttons = document.querySelectorAll('.btn');
+            buttons.forEach(function(button) {
+                button.classList.remove('active');
+            });
+
             // Show the selected task section
             document.getElementById(`${period}-tasks`).style.display = 'block';
+
+            // Add 'active' class to the clicked button
+            document.querySelector(`button[data-period="${period}"]`).classList.add('active');
         }
     </script>
 {% endblock %}
