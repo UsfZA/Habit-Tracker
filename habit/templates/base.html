@@ -16,7 +16,7 @@
     <header class="site-header">
         <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
             <div class="container">
-                <a class="navbar-brand" href="{% url 'habit-home' %}">Habit Tracker</a>
+                <a class="navbar-brand mr-4" href="{% url 'habit-home' %}"> Habit Tracker </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -33,12 +33,12 @@
             </div>
         </nav>
     </header>
-    <main role="main" class="container mt-5">
+    <main role="main" class="container">
         <div class="row">
             <div class="col-md-8">
                 {% if messages %}
                     {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} mb-3">
+                        <div class="alert alert-{{ message.tags }}">
                             {{ message }}
                         </div>
                     {% endfor %}
