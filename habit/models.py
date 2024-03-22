@@ -1,6 +1,6 @@
+from datetime import timedelta
 from django.db import models
 from django.contrib.auth.models import User
-from datetime import timedelta
 from django.utils import timezone
 from django.db.models import Q
 
@@ -17,7 +17,6 @@ class Habit(models.Model):
     completion_date = models.DateTimeField(null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
-
     def save(self, *args, **kwargs):
         """
         Override the save method to calculate tasks number and completion_date.
@@ -30,14 +29,13 @@ class Habit(models.Model):
 
         # Calculate the number of tasks needed to achieve the habit goal
         if not self.num_of_tasks:
-            self.num_of_tasks = ((self.goal // num_of_period) * self.frequency)
+            self.num_of_tasks = (self.goal // num_of_period) * self.frequency
 
         # Calculate the completion date based on the goal
         if not self.completion_date:
             self.completion_date = timezone.now() + timedelta(hours=self.goal*24)
 
         super().save(*args, **kwargs)
-
 
 
 class TaskTracker(models.Model):
@@ -49,14 +47,13 @@ class TaskTracker(models.Model):
     task_completion_date = models.DateTimeField(null=True, blank=True)
 
 
-    
     @classmethod
     def update_task_statuses(cls, user_id):
         """
         Update task statuses based on due dates for a specific user.
 
-        This class method updates the status of tasks that are overdue (i.e., their due date is in the past) 
-        for the specified user. Tasks with a status of 'Completed' are not modified.
+        This class method updates the status of tasks that are overdue 
+        (i.e., their due date is in the past) for the specified user. 
 
         Args:
             user_id (int): The ID of the user for whom tasks should be updated.
@@ -67,22 +64,23 @@ class TaskTracker(models.Model):
                 - A list of task IDs that have been updated to 'Failed'.
 
         Note:
-            The method marks tasks as 'Failed' if their due date is in the past and their status is not 'Completed'.
+            The method marks tasks as 'Failed' if their due date is in the 
+            past and their status is not 'Completed'.
         """
         updated_habit_ids = []
         updated_task_ids = []
-        tasks_to_update = cls.objects.filter(~Q(task_status='Completed'), habit__user_id=user_id, due_date__lt=timezone.now())
+        tasks_to_update = cls.objects.filter(~Q(task_status='Completed'),
+                                             habit__user_id=user_id,
+                                             due_date__lt=timezone.now())
         for task in tasks_to_update:
             task.task_status = 'Failed'
             task.save()
             updated_habit_ids.append(task.habit_id)
             updated_task_ids.append(task.id)
-
         return (updated_habit_ids, updated_task_ids)
-    
 
 
-    @classmethod   
+    @classmethod
     def create_tasks(cls, habit):
         """
         Populate Task table with habit tasks and their due dates 
@@ -90,21 +88,21 @@ class TaskTracker(models.Model):
         # Calculate the time between tasks
         time_jump = habit.goal / habit.num_of_tasks
         time_skip = timedelta(hours=time_jump*24)
-        
 
         # Initialize start and due dates for tasks
         due_date = start_date = habit.creation_time
         default='In progress'
 
-        # Increment the due_date and start_date by time_skip, skip the first iteration for start_date
+        # Increment the due_date and start_date by time_skip,
+        # skip the first iteration for start_date
         for i in range(1, habit.num_of_tasks+1):
             due_date += time_skip
             if i == 1:
                 current_start_date = start_date
             else:
                 current_start_date += time_skip
-            cls.objects.create(habit=habit, due_date=due_date, task_number=i, task_status=default, start_date=current_start_date)
-
+            cls.objects.create(habit=habit, due_date=due_date, task_number=i,
+                               task_status=default, start_date=current_start_date)
 
 
 class Streak(models.Model):
@@ -113,7 +111,6 @@ class Streak(models.Model):
     num_of_failed_tasks = models.IntegerField(default = 0)
     longest_streak = models.IntegerField(default = 0)
     current_streak = models.IntegerField(default = 0)
-
 
     def save(self, *args, **kwargs):
         # assign current streak to longest streak if its larger
@@ -135,8 +132,12 @@ class Streak(models.Model):
             habit_streak.current_streak = 0
             habit_streak.save()
 
+
     @classmethod
     def initiate_streak(cls, habit):
+        """
+        intiate streak instance to be incremented
+        """
         cls.objects.create(habit=habit)
 
 
@@ -148,23 +149,33 @@ class Achievement(models.Model):
 
     @classmethod
     def update_achievements(cls, tasks):
+        """
+        update achievments when a user broke a habit
+        """
         for task in tasks:
             title = 'Break The Habit'
-            cls.objects.create(habit=task.habit, date=task.due_date, title=title, streak_length=streak.longest_streak)
+            cls.objects.create(habit=task.habit, date=task.due_date,
+                               title=title, streak_length=streak.longest_streak)
+
 
     @classmethod
     def rewards_streaks(cls, habit_id, streak):
+        """
+        reward streaks when it reaches a defined echievements
+        """
         if streak.current_streak == 7:
             title = '7-Day Streak'
             habit = Habit.objects.get(pk=habit_id)  # Retrieve the Habit instance using the habit_id
-            cls.objects.create(habit=habit, date=timezone.now(), title=title, streak_length=streak.current_streak)
+            cls.objects.create(habit=habit, date=timezone.now(), title=title,
+                               streak_length=streak.current_streak)
         if streak.current_streak == 14:
             title = '14-Day Streak'
             habit = Habit.objects.get(pk=habit_id)  # Retrieve the Habit instance using the habit_id
-            cls.objects.create(habit=habit, date=timezone.now(), title=title, streak_length=streak.current_streak)
+            cls.objects.create(habit=habit, date=timezone.now(), title=title,
+                               streak_length=streak.current_streak)
         if streak.current_streak == 30:
             title = '30-Day Streak'
             habit = Habit.objects.get(pk=habit_id)  # Retrieve the Habit instance using the habit_id
-            cls.objects.create(habit=habit, date=timezone.now(), title=title, streak_length=streak.current_streak)
-
-
+            cls.objects.create(habit=habit, date=timezone.now(), title=title,
+                               streak_length=streak.current_streak)
+            

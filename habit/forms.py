@@ -1,10 +1,30 @@
+"""
+Forms for managing habits in the Habit application.
+
+This module defines Django forms used for creating and managing habits in the Habit application.
+These forms include the HabitForm, which allows users to input habit details such as name, 
+frequency, period, goal, and notes.
+
+Classes:
+    HabitForm: A form for creating and managing habits.
+
+"""
+
+
+
 from django import forms
 from django.core.validators import MinValueValidator
-from .models import Habit
 from .models import Habit
 from .utils import convert_goal_to_days
 
 class HabitForm(forms.ModelForm):
+    """
+    Form for creating or updating a Habit.
+
+    Attributes:
+        PERIOD_CHOICES (list): Choices for the habit period.
+        GOAL_CHOICES (list): Choices for the habit goal duration.
+    """
     PERIOD_CHOICES = [
         ('daily', 'Daily'),
         ('weekly', 'Weekly'),
@@ -16,22 +36,25 @@ class HabitForm(forms.ModelForm):
         ('1w', '1 Week'),
         ('1m', '1 Month'),
         ('2m', '2 Months'),
-        ('3m', '3 months'),
-        ('6m', '6 months'),
-        ('1y', '1 year')
-    ]   
+        ('3m', '3 Months'),
+        ('6m', '6 Months'),
+        ('1y', '1 Year')
+    ]
 
-    period    = forms.ChoiceField(choices=PERIOD_CHOICES, widget=forms.Select, required=True)
+    period = forms.ChoiceField(choices=PERIOD_CHOICES, widget=forms.Select, required=True)
     frequency = forms.IntegerField(initial=1, required=False, validators=[MinValueValidator(1)])
-    notes     = forms.CharField(required=False)
-    goal      = forms.ChoiceField(choices=GOAL_CHOICES, widget=forms.Select, required=True)
-
+    notes = forms.CharField(required=False)
+    goal = forms.ChoiceField(choices=GOAL_CHOICES, widget=forms.Select, required=True)
 
     def clean_goal(self):
+        """
+        Clean and validate the 'goal' field.
+
+        Returns:
+            int: The number of days corresponding to the selected goal.
+        """
         selected_goal = self.cleaned_data.get('goal')
-        habit = Habit()
         return convert_goal_to_days(selected_goal)
-    
 
     def is_valid_habit_name(self, user):
         """
@@ -46,10 +69,9 @@ class HabitForm(forms.ModelForm):
         habit_name = self.cleaned_data['name']
 
         # Check if a habit with the same name and user already exists
-        if Habit.objects.filter(user=user, name__iexact=habit_name).exists(): 
+        if Habit.objects.filter(user=user, name__iexact=habit_name).exists():
             return False
         return True
-
 
     def is_goal_achievable(self):
         """
@@ -74,5 +96,8 @@ class HabitForm(forms.ModelForm):
         return num < goal
 
     class Meta:
+        """
+        Meta class for defining the model and fields for the HabitForm.
+        """
         model = Habit
         fields = ['name', 'frequency', 'period', 'goal', 'notes']
