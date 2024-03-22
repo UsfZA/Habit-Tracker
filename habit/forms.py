@@ -1,22 +1,37 @@
 from django import forms
 from django.core.validators import MinValueValidator
 from .models import Habit
-
-
+from .models import Habit
+from .utils import convert_goal_to_days
 
 class HabitForm(forms.ModelForm):
     PERIOD_CHOICES = [
-        ('daily', 'Day'),
-        ('weekly', 'Week'),
-        ('monthly', 'Month'),
-        ('annual', 'Year')
+        ('daily', 'Daily'),
+        ('weekly', 'Weekly'),
+        ('monthly', 'Monthly'),
+        ('annual', 'Annual')
     ]
-         
+
+    GOAL_CHOICES = [
+        ('1w', '1 Week'),
+        ('1m', '1 Month'),
+        ('2m', '2 Months'),
+        ('3m', '3 months'),
+        ('6m', '6 months'),
+        ('1y', '1 year')
+    ]   
+
     period    = forms.ChoiceField(choices=PERIOD_CHOICES, widget=forms.Select, required=True)
     frequency = forms.IntegerField(initial=1, required=False, validators=[MinValueValidator(1)])
     notes     = forms.CharField(required=False)
-    goal      = forms.IntegerField(initial=1, required=True, validators=[MinValueValidator(1)])
+    goal      = forms.ChoiceField(choices=GOAL_CHOICES, widget=forms.Select, required=True)
 
+
+    def clean_goal(self):
+        selected_goal = self.cleaned_data.get('goal')
+        habit = Habit()
+        return convert_goal_to_days(selected_goal)
+    
 
     def is_valid_habit_name(self, user):
         """
@@ -31,7 +46,7 @@ class HabitForm(forms.ModelForm):
         habit_name = self.cleaned_data['name']
 
         # Check if a habit with the same name and user already exists
-        if Habit.objects.filter(user=user, name__iexact=habit_name).exists():
+        if Habit.objects.filter(user=user, name__iexact=habit_name).exists(): 
             return False
         return True
 

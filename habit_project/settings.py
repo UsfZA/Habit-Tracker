@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'Users.apps.UsersConfig',
     'crispy_forms',
     'mathfilters',
+    'django_extensions',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -155,3 +156,9 @@ LOGGING = {
         },
     },
 }
+
+GRAPH_MODELS = {
+  'all_applications': True,
+  'group_models': True,
+}
+

@@ -1,10 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
-from datetime import timedelta, datetime
+from datetime import timedelta
 from django.utils import timezone
-
 from django.db.models import Q
-
 
 
 class Habit(models.Model):
@@ -20,25 +18,15 @@ class Habit(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
-
     def save(self, *args, **kwargs):
         """
         Override the save method to calculate tasks number and completion_date.
 
         """
+        from .utils import convert_period_to_days
         self.name = self.name.lower()
 
-        # assign a number to periodicity 
-        if self.period == 'daily':
-            num_of_period = 1
-        elif self.period == 'weekly':
-            num_of_period = 7
-        elif self.period == 'monthly':
-            num_of_period = 30
-        elif self.period == 'annual':
-            num_of_period = 365
-        
-        #num_of_period = periodicty_number(self.period)
+        num_of_period = convert_period_to_days(self.period)
 
         # Calculate the number of tasks needed to achieve the habit goal
         if not self.num_of_tasks:
@@ -52,7 +40,7 @@ class Habit(models.Model):
 
 
 
-class Task(models.Model):
+class TaskTracker(models.Model):
     habit = models.ForeignKey(Habit, on_delete=models.CASCADE)
     start_date = models.DateTimeField(null=True, blank=True)
     due_date = models.DateTimeField(null=True, blank=True)
@@ -95,7 +83,7 @@ class Task(models.Model):
 
 
     @classmethod   
-    def create_due_dates(cls, habit):
+    def create_tasks(cls, habit):
         """
         Populate Task table with habit tasks and their due dates 
         """

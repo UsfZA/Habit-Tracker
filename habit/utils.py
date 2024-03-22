@@ -1,5 +1,5 @@
 from django.db import connection
-from .models import Task
+from .models import TaskTracker
 
 def periodicty_number(period):   
     """
@@ -9,13 +9,43 @@ def periodicty_number(period):
     """
     pass
 
-def calculate_progress(habits):
-    # Calculate progress percentage for each active habit
-    for habit in habits:
-        if habit.num_of_tasks > 0:
-            habit.progress_percentage = round((habit.num_of_completed_tasks / habit.num_of_tasks) * 100, 2)
+
+
+def convert_goal_to_days(value):
+    if value.endswith('d'):
+        return int(value[:-1])
+    elif value.endswith('w'):
+        return int(value[:-1]) * 7
+    elif value.endswith('m'):
+        months = int(value[:-1])
+        if months == 1:
+            return 30
+        elif months == 2:
+            return 60
+        elif months == 3:
+            return 90
+        elif months == 6:
+            return 180
         else:
-            habit.progress_percentage = 0.0
+            raise ValueError("Invalid duration format")
+    elif value.endswith('y'):
+        return int(value[:-1]) * 365
+    else:
+        raise ValueError("Invalid duration format")
+    
+def convert_period_to_days(value : str):
+    if value.startswith('d'):
+        value_num = 1
+    elif value.startswith('w'):
+        value_num = 7
+    elif value.startswith('m'):
+        value_num = 30
+    elif value.startswith('a'):
+        value_num = 365
+    else:
+        raise ValueError("Invalid duration format")
+    return value_num
+
 
 def escape_and_quote(ids):
     """
@@ -36,7 +66,6 @@ def escape_and_quote(ids):
     return escaped_updated_tasks_id_str
 
 
-
 def extract_first_failed_task(updated_task_ids):
     """
     Extracts the first failed task for each habit based on updated task IDs.
@@ -53,12 +82,12 @@ def extract_first_failed_task(updated_task_ids):
     ranked_updated_tasks_query = """
         SELECT * FROM (
             SELECT *, RANK() OVER(PARTITION BY habit_id ORDER BY task_number ASC) AS rk 
-            FROM habit_data_base.habit_task
+            FROM habit_data_base.habit_tasktracker
             WHERE id IN (%s)
         ) AS habit_rank 
         WHERE rk = 1
     """
-    first_failed_tasks = Task.objects.raw(ranked_updated_tasks_query, [escaped_updated_tasks_ids]).prefetch_related('streak')
+    first_failed_tasks = TaskTracker.objects.raw(ranked_updated_tasks_query, [escaped_updated_tasks_ids]).prefetch_related('streak')
 
     
     return first_failed_tasks

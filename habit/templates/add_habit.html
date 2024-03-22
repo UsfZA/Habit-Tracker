@@ -20,14 +20,17 @@
 
                         <div class="form-group row">
                             <label for="{{ form.frequency.id_for_label }}" class="col-sm-3 col-form-label text-right">Frequency:</label>
-                            <div class="col-sm-2">
+                            <div class="col-sm-9">
                                 {{ form.frequency }}
                                 {% for error in form.frequency.errors %}
                                     <small class="text-danger">{{ error }}</small>
                                 {% endfor %}
                             </div>
-                            <label for="{{ form.number_of_times.id_for_label }}" class="col-sm-2 col-form-label text-right">A</label>
-                            <div class="col-sm-3">
+                        </div>
+                        
+                        <div class="form-group row">
+                            <label for="{{ form.number_of_times.id_for_label }}" class="col-sm-3 col-form-label text-right">Period</label>
+                            <div class="col-sm-9">
                                 {{ form.period }}
                                 {% for error in form.period.errors %}
                                     <small class="text-danger">{{ error }}</small>

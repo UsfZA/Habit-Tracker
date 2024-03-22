@@ -1,0 +1,12 @@
+asgiref @ file:///C:/ci_311/asgiref_1676448296195/work
+Django @ file:///C:/ci_311/django_1676469589007/work
+django-crispy-forms @ file:///home/conda/feedstock_root/build_artifacts/django-crispy-forms_1697372012953/work
+
+django-mathfilters @ file:///opt/Miniconda/conda-bld/django-mathfilters_1681225402166/work
+greenlet @ file:///C:/b/abs_a6c75ie0bc/croot/greenlet_1702060012174/work
+mysqlclient==2.2.4
+pyodbc @ file:///C:/b/abs_90kly0uuwz/croot/pyodbc_1705431396548/work
+SQLAlchemy @ file:///C:/b/abs_876dxwqqu8/croot/sqlalchemy_1705089154696/work
+sqlparse @ file:///C:/b/abs_88361ub_qu/croot/sqlparse_1690904577514/work
+typing_extensions @ file:///C:/b/abs_72cdotwc_6/croot/typing_extensions_1705599364138/work
+tzdata @ file:///croot/python-tzdata_1690578112552/work
