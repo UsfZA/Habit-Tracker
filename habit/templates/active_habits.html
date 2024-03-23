@@ -24,7 +24,7 @@
                 <!-- Display Daily Habits -->
                 <div id="daily-active-habits">
                     <div class="row">
-                        {% for habit in daily_active_habits %}
+                        {% for habit in daily_habits %}
                             {% include 'habit_card.html' %}
                         {% endfor %}
                     </div>
@@ -32,7 +32,7 @@
                 <!-- Display Weekly Habits -->
                 <div id="weekly-active-habits">
                     <div class="row">
-                        {% for habit in weekly_active_habits %}
+                        {% for habit in weekly_habits %}
                             {% include 'habit_card.html' %}
                         {% endfor %}
                     </div>
@@ -40,7 +40,7 @@
                 <!-- Display Monthly Habits -->
                 <div id="monthly-active-habits">
                     <div class="row">
-                        {% for habit in monthly_active_habits %}
+                        {% for habit in monthly_habits %}
                             {% include 'habit_card.html' %}
                         {% endfor %}
                     </div>

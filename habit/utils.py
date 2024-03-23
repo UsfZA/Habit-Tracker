@@ -6,8 +6,9 @@ These functions include conversion functions and other helper methods.
 """
 
 
-from django.db import connection
 from habit.models import TaskTracker
+from django.db.models import Min
+
 
 def convert_goal_to_days(value: str) -> int:
     """
@@ -71,24 +72,7 @@ def convert_period_to_days(value: str) -> int:
 
 
 
-def escape_and_quote(ids):
-    """
-    Escape and quote task IDs for safe use in the raw SQL query.
 
-    This function ensures that the IDs are properly formatted and protected
-    against SQL injection attacks by escaping special characters and quoting
-    the IDs as necessary before using them in the SQL query.
-
-    Args:
-        ids (iterable): An iterable containing the task IDs to be escaped and quoted.
-
-    Returns:
-        str: A string containing the properly escaped and quoted task IDs, 
-        suitable for use in a SQL query.
-    """
-    updated_tasks_id_str = ','.join(map(str, ids))
-    escaped_updated_tasks_id_str = connection.ops.quote_name(updated_tasks_id_str)
-    return escaped_updated_tasks_id_str
 
 
 def extract_first_failed_task(updated_task_ids):
@@ -101,17 +85,15 @@ def extract_first_failed_task(updated_task_ids):
     Returns:
         list: List of first failed tasks for each habit.
     """
-    escaped_updated_tasks_ids = escape_and_quote(updated_task_ids)
-    ranked_updated_tasks_query = """
-        SELECT * FROM (
-            SELECT *, RANK() OVER(PARTITION BY habit_id ORDER BY task_number ASC) AS rk 
-            FROM habit_data_base.habit_tasktracker
-            WHERE id IN (%s)
-        ) AS habit_rank 
-        WHERE rk = 1
-    """
-    first_failed_tasks = TaskTracker.objects.raw(
-                                    ranked_updated_tasks_query,
-                                    [escaped_updated_tasks_ids]
-                                    ).prefetch_related('streak')
+    # Annotate the minimum task number for each habit
+    min_task_numbers = TaskTracker.objects.filter(
+        id__in=updated_task_ids
+        ).values('habit_id').annotate(min_task_number=Min('task_number'))
+
+    # Fetch the first failed task for each habit using the annotated minimum task number
+    first_failed_tasks = TaskTracker.objects.filter(
+        id__in=updated_task_ids, 
+        task_number__in=min_task_numbers.values('min_task_number')
+        ).order_by('habit_id').prefetch_related('streak')
+
     return first_failed_tasks

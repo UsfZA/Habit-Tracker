@@ -9,6 +9,7 @@ from .forms import HabitForm
 from .models import TaskTracker, Habit, Streak, Achievement
 from .utils import extract_first_failed_task
 from .analytics import due_today_tasks, available_tasks, habit_by_period, calculate_progress
+from django.http import HttpResponseNotFound
 
 
 class HabitView():
@@ -140,9 +141,15 @@ class HabitView():
 
     @staticmethod
     @login_required
-    def delete_habit(habit_id):
-        Habit.objects.get(pk=habit_id).delete
-
+    def delete_habit(cls, request, habit_id):
+        try:
+            habit = Habit.objects.get(pk=habit_id)
+            habit_name = habit.name
+            habit.delete()
+            messages.success(f"{habit_name} Habit deleted successfully")
+            return redirect('active_habits')
+        except Habit.DoesNotExist:
+            return HttpResponseNotFound("Habit does not exist")
 
     @staticmethod
     def update_habit():
@@ -171,6 +178,7 @@ class AnalyticModel():
         # Filter tracked habits with the same periodicity
         daily_habits, weekly_habits, monthly_habits = habit_by_period(all_active_habits)
 
+
         # Calculate progress percentage for each active habit
         # based on (num_complted + num_failed)/num_of_tasks
         calculate_progress(all_active_habits)
@@ -187,8 +195,9 @@ class AnalyticModel():
         }
         return render(request, 'active_habits.html', context)
 
-
-    def habit_detail(self, request, habit_id):
+    @staticmethod
+    @login_required
+    def habit_detail(request, habit_id):
         """
         View function to display all habit information (streaks, tasks, achievments) 
         for a given habit_id. including tables for Tasks jornal and Streak log

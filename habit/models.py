@@ -69,11 +69,12 @@ class TaskTracker(models.Model):
         """
         updated_habit_ids = []
         updated_task_ids = []
-        tasks_to_update = cls.objects.filter(~Q(task_status='Completed'),
-                                             habit__user_id=user_id,
-                                             due_date__lt=timezone.now())
+        tasks_to_update = cls.objects.filter(habit__user_id=user_id,
+                                            due_date__lt=timezone.now(),
+                                            task_status='In progress')
         for task in tasks_to_update:
             task.task_status = 'Failed'
+            task.task_completion_date = task.due_date
             task.save()
             updated_habit_ids.append(task.habit_id)
             updated_task_ids.append(task.id)
@@ -150,12 +151,34 @@ class Achievement(models.Model):
     @classmethod
     def update_achievements(cls, tasks):
         """
-        update achievments when a user broke a habit
+        Update achievements when a user breaks a habit.
         """
         for task in tasks:
             title = 'Break The Habit'
+            # Fetch the streak information associated with the habit
+            streak = cls.get_habit_streak(task.habit)
+            # Assign the streak length from the fetched streak information
+            streak_length = streak.longest_streak if streak else 0
             cls.objects.create(habit=task.habit, date=task.due_date,
-                               title=title, streak_length=streak.longest_streak)
+                               title=title, streak_length=streak_length)
+
+    @classmethod
+    def get_habit_streak(cls, habit):
+        """
+        Fetch the streak information associated with the given habit.
+
+        Args:
+            habit (Habit): The habit for which to fetch the streak information.
+
+        Returns:
+            Streak: The streak information associated with the habit.
+        """
+        # Fetch the related Streak object associated with the habit
+        try:
+            streak = habit.streak.get()
+            return streak
+        except Streak.DoesNotExist:
+            return None
 
 
     @classmethod
