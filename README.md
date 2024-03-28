@@ -3,7 +3,7 @@
 Django Habit Tracker is a web application designed to help users track their habits, manage tasks, and monitor progress towards their goals.
 This README provides an overview of the project's features, installation instructions, usage guidelines, and contribution guidelines.
 
-## Installation
+# Installation #
 
 To install and run Django Habit Tracker locally, follow these steps:
 
@@ -35,29 +35,37 @@ python manage.py runserver
 
 7. Access the application in your web browser at [http://localhost:8000](url)
 
-## Features
-### 1. User Authentication and Registration: ###
+# Features #
+### User Authentication and Registration: ###
   * Users can create accounts and log in to track their habits.
-### 2. Habit Tracking: ###
+### Habit Tracking: ###
   * Add, update, and delete habits.
   * Tasks are automatically generated based on habit goal, frequency and period.
   * Track streaks for each habit to maintain consistency.
   * Earn achievements for hitting streak milestones or completing habits.
-### 3. Analytics: ###
+### Analytics: ###
   * View detailed analytics on habit tracking, including active habits, streak lengths, and progress towards goals.
   * Visualize habit data to gain insights into behavior patterns.
-### 4. User Profile: ###
+### User Profile: ###
   * Users have personalized profiles displaying their active habits and other relevant information.
 
-## Usage ##
+# Usage #
 Once the application is running, you can perform the following actions: 
 
-### * Register/Login: ###
+### Register/Login: ###
   * Create an account or log in with existing credentials.
-### * View and Mark tasks as completed : ###
+### Add Habits: ###
+  * Navigate to the "Add Habit" page and input details such as habit name, frequency, period, and goal.
+### View and Mark tasks as completed In Home page: ###
   * View due today tasks and active tasks.
-  * Mark tasks as completed by clicking on them
-### 
+  * Mark tasks as completed by clicking on them.
+### Monitor Progress: ###
+  * Check your analytics regularly to monitor streak lengths, progress percentages, and achievements.
+### Habit Manager: ###
+  * Navigate to the "Habit Manager" :
+     * View all tracked habits and access their details
+     * Delete habits along with associated tasks, streaks, and achievements.
+     * Update habits to modify details such as name, frequency, period, or goal.
 
-
-Navigate to the "Add Habit" page and input details such as habit name, frequency, period, and goal.
+# Acknowledgments #
+We would like to thank the Django community for their excellent documentation and support.
