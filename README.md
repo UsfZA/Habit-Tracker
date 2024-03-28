@@ -17,7 +17,8 @@ cd Habit-Tracker
 ```
 pip install -r requirements.txt
 ```
-  ### Database configuration
+  ### Database configuration ###
+I'm using Mysql as database so i included mysqlclient in requirements
 
 3. copy the '**local_settings.example.py**' and rename it to local_settings.py.
 4. Update the database configuration in '**local_settings.py**' with your own database credentials.
