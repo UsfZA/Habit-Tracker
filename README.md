@@ -9,8 +9,8 @@ To install and run Django Habit Tracker locally, follow these steps:
 
 1. clone the repository
 ```
-git clone https://github.com/UsfZA/habit_project.git
-cd habit_project
+git clone https://github.com/UsfZA/Habit-Tracker.git
+cd Habit-Tracker
 ```
 
 3. Install dependencies:
