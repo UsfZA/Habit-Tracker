@@ -80,8 +80,13 @@ WSGI_APPLICATION = 'Habit_Tracker.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-from local_settings import DATABASES
+from .local_settings import DATABASES
+import os 
 
+if os.path.exists('local_settings.py'):
+    from local_settings import DATABASES
+else:
+    from .local_settings import DATABASES
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
