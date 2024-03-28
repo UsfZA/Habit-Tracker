@@ -1,7 +1,7 @@
 Django==4.1
-django-crispy-forms==2.1
+django-crispy-forms
 django-mathfilters==1.0.0
-fonrawesomefree==6.5.1
+fontawesomefree==6.5.1
 django_extensions==3.2.3
 pyodbc==5.0.1
 SQLAlchemy==2.0.25
