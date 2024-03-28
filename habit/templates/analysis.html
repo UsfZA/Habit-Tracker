@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="my-4">Habits Analysis</h1>
+    <!-- Dropdown for selecting period -->
+    <div class="mb-4"> <!-- Add margin-bottom for spacing -->
+        <select class="form-select" onchange="showHabits(this.value)">
+            <option value="all">All tracked habits</option>
+            <option value="daily">Daily habits</option>
+            <option value="weekly">Weekly habits</option>
+            <option value="monthly">Monthly habits</option>
+            <option value="longest-streak">Longest run streak over all defined habits</option>
+            <option value="longest-current-streak">Longest current streak over all defined habits</option>
+            <option value="habit-longest-streak">Longest Streak for Habit :</option>
+        </select>
+    </div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-md-11">
+                <!-- Display All Habits -->
+                <div id="all-active-habits">
+                    <div class="row">
+                        {% for habit in all_habits %}
+                            {% include 'habit_card.html' %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <!-- Display Daily Habits -->
+                <div id="daily-active-habits" style="display: none;">
+                    <div class="row">
+                        {% for habit in daily_habits %}
+                            {% include 'habit_card.html' %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <!-- Display Weekly Habits -->
+                <div id="weekly-active-habits" style="display: none;">
+                    <div class="row">
+                        {% for habit in weekly_habits %}
+                            {% include 'habit_card.html' %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <!-- Display Monthly Habits -->
+                <div id="monthly-active-habits" style="display: none;">
+                    <div class="row">
+                        {% for habit in monthly_habits %}
+                            {% include 'habit_card.html' %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <!-- Display Longest Streak -->
+                <div id="longest-streak-active-habits" style="display: none;">
+                    <div class="row">
+                        {% for habit in longest_all_streak %}
+                            {% include 'habit_card.html' %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <!-- Display Longest Current Streak -->
+                <div id="longest-current-streak-active-habits" style="display: none;">
+                        {% for habit in longest_current_all_streak %}
+                            {% include 'habit_card.html' %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showHabits(period) {
+            // Hide all habit sections
+            document.getElementById('all-active-habits').style.display = 'none';
+            document.getElementById('daily-active-habits').style.display = 'none';
+            document.getElementById('weekly-active-habits').style.display = 'none';
+            document.getElementById('monthly-active-habits').style.display = 'none';
+            document.getElementById('longest-streak-active-habits').style.display = 'none';
+            document.getElementById('longest-current-streak-active-habits').style.display = 'none';
+
+            // Show the selected habit section
+            document.getElementById(`${period}-active-habits`).style.display = 'block';
+        }
+    </script>
+{% endblock %}

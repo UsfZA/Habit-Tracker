@@ -82,7 +82,7 @@ class TaskTracker(models.Model):
 
 
     @classmethod
-    def create_tasks(cls, habit):
+    def create_tasks(cls, habit, r=0):
         """
         Populate Task table with habit tasks and their due dates 
         """
@@ -96,9 +96,9 @@ class TaskTracker(models.Model):
 
         # Increment the due_date and start_date by time_skip,
         # skip the first iteration for start_date
-        for i in range(1, habit.num_of_tasks+1):
+        for i in range(r+1, habit.num_of_tasks+(r+1)):
             due_date += time_skip
-            if i == 1:
+            if i == r+1:
                 current_start_date = start_date
             else:
                 current_start_date += time_skip

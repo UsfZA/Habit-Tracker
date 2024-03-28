@@ -6,6 +6,7 @@
     <!-- Add Habit Button -->
     <a class="btn btn-primary mb-4" href="{% url 'habit-creation' %}">Add Habit</a>
     <a class="btn btn-danger mb-4" href="{% url 'active_habits' %}">Habit Manager</a>
+    <a class="btn btn-success mb-4" href="{% url 'HabitsAnalysis' %}">Habit Analysis</a>
 
     <!-- Buttons for Daily, Weekly, and Monthly Tasks -->
     <div class="mb-4"> <!-- Add margin-bottom for spacing -->
@@ -13,9 +14,9 @@
         <button class="btn btn-warning" onclick="showTasks('weekly')">Available Tasks</button>
     </div>
 
-    <!-- Display Daily Tasks -->
+    <!-- Display Due The next 24 hours Tasks -->
     <div id="daily-tasks" class="card-deck mt-4">
-        {% for task in daily_tasks %}
+        {% for task in due_today_tasks %}
             <div class="card">
                 <div class="card-body">
                     <form method="post" action="{% url 'habit-home' %}">
@@ -28,20 +29,17 @@
                             {{ task.habit.name }} - Task {{ task.task_number }}
                         </label>
                         <p class="mt-2">Due: {{ task.due_date|date:"F d, Y" }} at {{ task.due_date|date:"g:i A" }}</p>
-                        <!-- <p>Priority: {{ task.habit.priority }}</p> -->
-                        
-                        <!-- Mark as Complete and Snooze Buttons -->
+                        <!-- Mark as Complete Button-->
                         <button type="submit" class="btn btn-success mr-2">Mark as Complete</button>
-                        <!-- <button class="btn btn-warning">Snooze</button> -->
                     </form>
                 </div>
             </div>
         {% endfor %}
     </div>
 
-    <!-- Display Weekly Tasks -->
+    <!-- Display The Started Tasks -->
     <div id="weekly-tasks" style="display: none;" class="card-deck mt-4">
-        {% for task in weekly_tasks %}
+        {% for task in available_tasks %}
             <div class="card">
                 <div class="card-body">
                     <form method="post" action="{% url 'habit-home' %}">
@@ -53,12 +51,9 @@
                         <label class="form-check-label" for="task_{{ task.id }}">
                             {{ task.habit.name }} - Task {{ task.task_number }}
                         </label>
-                        <p class="mt-2">Due: {{ task.due_date|date:"F d, Y" }} at {{ task.due_date|date:"g:i A" }}</p>
-                        <!-- <p>Priority: {{ task.habit.priority }}</p> -->
-                        
-                        <!-- Mark as Complete and Snooze Buttons -->
+                        <p class="mt-2">Due: {{ task.due_date|date:"F d, Y" }} at {{ task.due_date|date:"g:i A" }}</p>                        
+                        <!-- Mark as Complete Buttons -->
                         <button type="submit" class="btn btn-success mr-2">Mark as Complete</button>
-                        <!-- <button class="btn btn-warning">Snooze</button> -->
                     </form>
                 </div>
             </div>

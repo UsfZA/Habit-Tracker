@@ -28,7 +28,11 @@ urlpatterns = [
     path('logout', auth_views.LogoutView.as_view(template_name='Users/logout.html'), name='logout'),
     path('home/', habit_views.HabitView.habit_home, name='habit-home'),
     path('addHabit/', habit_views.HabitView.add_habit, name='habit-creation'),
+    path('drophabit/<int:habit_id>/', habit_views.HabitView.delete_habit, name='habit-deletion'),
+    path('edithabit/<int:habit_id>/', habit_views.HabitView.update_habit, name='habit-update'),
     path('about/', habit_views.about, name='habit-about'),
     path('ActiveHabits/', habit_views.AnalyticModel.active_habits, name = 'active_habits'),
-    path('habit/<int:habit_id>/', habit_views.AnalyticModel.habit_detail, name='habit_detail')
+    path('habit/<int:habit_id>/', habit_views.AnalyticModel.habit_detail, name='habit_detail'),
+    path('HabitsAnalysis/', habit_views.habit_analysis_view, name = 'HabitsAnalysis'),
+
 ]

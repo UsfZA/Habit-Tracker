@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'Users.apps.UsersConfig',
     'crispy_forms',
     'mathfilters',
+    'fontawesomefree',
     'django_extensions',
     'django.contrib.admin',
     'django.contrib.auth',

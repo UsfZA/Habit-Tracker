@@ -19,7 +19,7 @@
                                     <p><i class="bi bi-check2"></i> <strong>Total Tasks:</strong> {{ habit.num_of_tasks }}</p>
                                 </div>
                                 <div class="col text-rightt">
-                                    <p><i class="bi bi-check2"></i> <strong>Tasks In progress:</strong> {{ habit.num_of_tasks|sub:habit.num_of_completed_tasks }}</p>
+                                    <p><i class="bi bi-check2"></i> <strong>Tasks In progress:</strong> {{ habit.num_of_tasks|sub:habit.num_of_completed_tasks|sub:streak.num_of_failed_tasks}}</p>
                                 </div>
                             </div>
                             <div class="row">

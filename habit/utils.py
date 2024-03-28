@@ -24,22 +24,21 @@ def convert_goal_to_days(value: str) -> int:
     Raises:
         ValueError: If the input duration format is invalid.
     """
-    if value.endswith('d'):
-        num = int(value[:-1])
-    if value.endswith('w'):
-        num = int(value[:-1]) * 7
-    if value.endswith('y'):
-        num = int(value[:-1]) * 365
-    if value.endswith('m'):
-        months = int(value[:-1])
-        if months == 1:
-            num = 30
-        if months == 2:
-            num = 60
-        if months == 3:
-            num = 90
-        if months == 6:
-            num = 180
+
+    if value == '3 days':
+        num = 3
+    elif value == '1 week':
+        num = 7
+    elif value == '1 month':
+        num = 30
+    elif value == '2 months':
+        num = 60
+    elif value == '3 months':
+        num = 90
+    elif value == '6 months':
+        num = 180
+    elif value == '1 year':
+        num = 365
     else:
         raise ValueError("Invalid duration format")
     return num
@@ -58,17 +57,17 @@ def convert_period_to_days(value: str) -> int:
     Raises:
         ValueError: If the input period format is invalid.
     """
-    if value.startswith('d'):
-        value_num = 1
-    if value.startswith('w'):
-        value_num = 7
-    if value.startswith('m'):
-        value_num = 30
-    if value.startswith('a'):
-        value_num = 365
+    if value == 'daily':
+        num = 1
+    elif value == 'weekly':
+        num = 7
+    elif value == 'monthly':
+        num = 30
+    elif value == 'annual':
+        num = 365
     else:
         raise ValueError("Invalid duration format")
-    return value_num
+    return num
 
 
 
@@ -94,6 +93,6 @@ def extract_first_failed_task(updated_task_ids):
     first_failed_tasks = TaskTracker.objects.filter(
         id__in=updated_task_ids, 
         task_number__in=min_task_numbers.values('min_task_number')
-        ).order_by('habit_id').prefetch_related('streak')
+        ).order_by('habit_id')
 
     return first_failed_tasks

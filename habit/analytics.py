@@ -8,7 +8,54 @@ These functions include conversion functions and other helper methods.
 
 from datetime import timedelta
 from django.utils import timezone
-from .models import TaskTracker
+from .models import TaskTracker, Habit, Streak
+from functools import partial
+
+
+
+
+
+def all_tracked_habits(user_id):
+    return Habit.objects.all().prefetch_related('streak')
+
+
+def habits_by_period(period):
+    # Function to filter habits by period
+    return partial(filter_habits_by_period, period)
+
+
+def filter_habits_by_period(period, habits):
+    # Function to filter habits by period
+    return habits.filter(period=period)
+
+
+def longest_streak_over_all_habits():
+    """
+    Retrieve habit_id of the habit with the longest streak from Streak table.
+
+    Args:
+        None.
+
+    Returns:
+        Habit_id
+
+    """
+    return Habit.objects.filter(id=Streak.objects.order_by('-longest_streak').first().habit_id).prefetch_related('streak')
+
+
+def longest_current_streak_over_all_habits():
+    """
+    Retrieve habit_id of the habit with the longest streak from Streak table.
+
+    Args:
+        None.
+
+    Returns:
+        Habit_id
+
+    """
+    return Habit.objects.filter(id=Streak.objects.order_by('-current_streak').first().habit_id).prefetch_related('streak')
+
 
 
 def due_today_tasks(user_id):
@@ -54,25 +101,6 @@ def available_tasks(user_id):
     )
     return tasks
 
-
-def habit_by_period(habits):
-    """
-    Group habits by their periods.
-
-    Args:
-        habits (QuerySet): A queryset containing habits.
-
-    Returns:
-        tuple: A tuple containing three querysets:
-               - daily_active_habits: Habits with 'daily' period.
-               - weekly_active_habits: Habits with 'weekly' period.
-               - monthly_active_habits: Habits with 'monthly' period.
-
-    """
-    daily_active_habits = habits.filter(period='daily')
-    monthly_active_habits = habits.filter(period='monthly')
-    weekly_active_habits = habits.filter(period='weekly')
-    return (daily_active_habits, weekly_active_habits, monthly_active_habits)
 
 
 def calculate_progress(habits):

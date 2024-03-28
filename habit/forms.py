@@ -33,12 +33,13 @@ class HabitForm(forms.ModelForm):
     ]
 
     GOAL_CHOICES = [
-        ('1w', '1 Week'),
-        ('1m', '1 Month'),
-        ('2m', '2 Months'),
-        ('3m', '3 Months'),
-        ('6m', '6 Months'),
-        ('1y', '1 Year')
+        ('3 days', "3 Day's"),
+        ('1 week', '1 Week'),
+        ('1 month', '1 Month'),
+        ('2 months', "2 Month's"),
+        ('3 months', "3 Month's"),
+        ('6 months', "6 Month's"),
+        ('1 year', '1 Year')
     ]
 
     period = forms.ChoiceField(choices=PERIOD_CHOICES, widget=forms.Select, required=True)
@@ -82,6 +83,7 @@ class HabitForm(forms.ModelForm):
         """
         goal = self.cleaned_data.get('goal')
         period = self.cleaned_data.get('period')
+        frequency = self.cleaned_data.get('frequency')
 
         num = 1  # Initialize 'num' with a default value
         if period == 'daily':
