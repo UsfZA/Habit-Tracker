@@ -80,7 +80,7 @@ def due_today_tasks(user_id):
     return due_today
 
 
-def available_tasks(user_id):
+def active_tasks(user_id):
     """
     Retrieve available tasks for a given user.
 

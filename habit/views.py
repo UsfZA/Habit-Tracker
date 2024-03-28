@@ -11,7 +11,7 @@ from .forms import HabitForm
 from .models import TaskTracker, Habit, Streak, Achievement
 from .utils import extract_first_failed_task, convert_period_to_days
 from .analytics import (
-    due_today_tasks, available_tasks, 
+    due_today_tasks, active_tasks, 
     calculate_progress, longest_current_streak_over_all_habits,
     all_tracked_habits, habits_by_period,
     longest_streak_over_all_habits,
@@ -96,7 +96,7 @@ class HabitView():
 
         context = {
             'due_today_tasks': due_today_tasks(user_id=user_id),
-            'available_tasks': available_tasks(user_id=user_id),
+            'available_tasks': active_tasks(user_id=user_id),
             'user_full_name': user_full_name.split()[0].capitalize()
         }
 

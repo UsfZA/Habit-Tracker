@@ -22,7 +22,7 @@
                 <div id="all-active-habits">
                     <div class="row">
                         {% for habit in all_habits %}
-                            {% include 'habit_card.html' %}
+                            {% include 'analysis_card.html' %}
                         {% endfor %}
                     </div>
                 </div>
@@ -30,7 +30,7 @@
                 <div id="daily-active-habits" style="display: none;">
                     <div class="row">
                         {% for habit in daily_habits %}
-                            {% include 'habit_card.html' %}
+                            {% include 'analysis_card.html' %}
                         {% endfor %}
                     </div>
                 </div>
@@ -38,7 +38,7 @@
                 <div id="weekly-active-habits" style="display: none;">
                     <div class="row">
                         {% for habit in weekly_habits %}
-                            {% include 'habit_card.html' %}
+                            {% include 'analysis_card.html' %}
                         {% endfor %}
                     </div>
                 </div>
@@ -46,7 +46,7 @@
                 <div id="monthly-active-habits" style="display: none;">
                     <div class="row">
                         {% for habit in monthly_habits %}
-                            {% include 'habit_card.html' %}
+                            {% include 'analysis_card.html' %}
                         {% endfor %}
                     </div>
                 </div>
@@ -54,14 +54,14 @@
                 <div id="longest-streak-active-habits" style="display: none;">
                     <div class="row">
                         {% for habit in longest_all_streak %}
-                            {% include 'habit_card.html' %}
+                            {% include 'analysis_card.html' %}
                         {% endfor %}
                     </div>
                 </div>
                 <!-- Display Longest Current Streak -->
                 <div id="longest-current-streak-active-habits" style="display: none;">
                         {% for habit in longest_current_all_streak %}
-                            {% include 'habit_card.html' %}
+                            {% include 'analysis_card.html' %}
                         {% endfor %}
                     </div>
                 </div>

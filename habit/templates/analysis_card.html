@@ -1,0 +1,28 @@
+<div class="col-md-6 mb-4">
+    <div class="card">
+        <div class="card-body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="card-title" style="max-height: 3.6rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ habit.name.capitalize }}</h5>
+            </div>
+            <h6 class="card-subtitle mb-2 text-muted">{{ habit.period.capitalize }} Habit</h6>
+            <p class="card-text"><strong>Started:</strong> {{ habit.creation_time|date:"F d, Y g:i A" }}</p>
+            <p class="card-text"><strong>Completion date:</strong> {{ habit.completion_date|date:"F d, Y g:i A" }}</p>                    
+            {% with streak=habit.streak.first %}
+                <p class="card-text"><strong>Longest Streak:</strong> {{ streak.longest_streak }}</p>
+                <p class="card-text"><strong>Current Streak:</strong> {{ streak.current_streak }}</p>
+            {% endwith %}
+            <div class="progress mt-auto">
+                <div class="progress-bar bg-success" role="progressbar" style="width: {{ habit.progress_percentage }}%;" aria-valuenow="{{ habit.progress_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <div class="row">
+                <div class="col text-left">
+                    <p class="progress-text"><strong>Progress:</strong></p>
+                </div>
+                <div class="col text-right">
+                    <p class="progress-text">{{ habit.progress_percentage|floatformat:"2" }}%</p>
+                </div>
+            </div>
+            <a class="btn btn-text btn-block mt-1" href="{% url 'habit_detail' habit_id=habit.id %}">More Details</a>
+        </div>
+    </div>
+</div>
