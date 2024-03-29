@@ -6,8 +6,7 @@ These functions include conversion functions and other helper methods.
 """
 
 
-from habit.models import TaskTracker
-from django.db.models import Min
+
 
 
 def convert_goal_to_days(value: str) -> int:
@@ -68,31 +67,3 @@ def convert_period_to_days(value: str) -> int:
     else:
         raise ValueError("Invalid duration format")
     return num
-
-
-
-
-
-
-def extract_first_failed_task(updated_task_ids):
-    """
-    Extracts the first failed task for each habit based on updated task IDs.
-
-    Args:
-        updated_task_ids (list): List of updated task IDs.
-
-    Returns:
-        list: List of first failed tasks for each habit.
-    """
-    # Annotate the minimum task number for each habit
-    min_task_numbers = TaskTracker.objects.filter(
-        id__in=updated_task_ids
-        ).values('habit_id').annotate(min_task_number=Min('task_number'))
-
-    # Fetch the first failed task for each habit using the annotated minimum task number
-    first_failed_tasks = TaskTracker.objects.filter(
-        id__in=updated_task_ids, 
-        task_number__in=min_task_numbers.values('min_task_number')
-        ).order_by('habit_id')
-
-    return first_failed_tasks

@@ -10,13 +10,13 @@ from django.contrib.auth.decorators import login_required
 from Users.utils import update_profile
 from .forms import HabitForm
 from .models import TaskTracker, Habit, Streak, Achievement
-from .utils import extract_first_failed_task, convert_period_to_days
+from .utils import convert_period_to_days
 from .analytics import (
     due_today_tasks, active_tasks, 
     calculate_progress, longest_current_streak_over_all_habits,
     all_tracked_habits, habits_by_period,
     longest_streak_over_all_habits,
-
+    extract_first_failed_task
 )
 
 
