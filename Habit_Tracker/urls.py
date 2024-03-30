@@ -32,9 +32,9 @@ urlpatterns = [
     path('home/', habit_views.HabitView.habit_home, name='habit-home'),
     path('about/', habit_views.HabitView.about, name='habit-about'),
 
-    path('addHabit/', habit_views.HabitManager.add_habit, name='habit-creation'),
+    path('addHabit/', habit_views.HabitManagerView.add_habit, name='habit-creation'),
     path('drophabit/<int:habit_id>/', habit_views.HabitManagerView.delete_habit, name='habit-deletion'),
-    path('ActiveHabits/', habit_views.HabitManager.active_habits, name = 'active_habits'),
+    path('ActiveHabits/', habit_views.HabitManagerView.active_habits, name = 'active_habits'),
     path('habit/<int:habit_id>/', habit_views.HabitManagerView.habit_detail, name='habit_detail'),
 
     path('HabitsAnalysis/', habit_views.AnalyticView.habit_analysis_view, name = 'HabitsAnalysis'),

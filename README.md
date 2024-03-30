@@ -40,7 +40,7 @@ python manage.py runserver
 ### User Authentication and Registration: ###
   * Users can create accounts and log in to track their habits.
 ### Habit Tracking: ###
-  * Add, update, and delete habits.
+  * Add, and delete habits.
   * Tasks are automatically generated based on habit goal, frequency and period.
   * Track streaks for each habit to maintain consistency.
   * Earn achievements for hitting streak milestones or completing habits.
@@ -66,6 +66,3 @@ Once the application is running, you can perform the following actions:
   * Navigate to the "Habit Manager" :
      * View all tracked habits and access their details including tasks journal and streak log for each habit
      * Delete habits along with associated tasks, streaks, and achievements.
-     * Update habits to modify details such as name, frequency, period, or goal.
-# Acknowledgments #
-We would like to thank the Django community for their excellent documentation and support.
