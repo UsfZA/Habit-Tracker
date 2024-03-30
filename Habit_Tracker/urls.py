@@ -20,19 +20,23 @@ from Users import views as user_views
 from habit import views as habit_views
 
 
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', auth_views.LoginView.as_view(template_name='Users/login.html'), name='login'),
     path('register/', user_views.register, name='register'),
     path('profile/', user_views.profile, name='profile'),
-    path('', auth_views.LoginView.as_view(template_name='Users/login.html'), name='login'),
     path('logout', auth_views.LogoutView.as_view(template_name='Users/logout.html'), name='logout'),
+
     path('home/', habit_views.HabitView.habit_home, name='habit-home'),
-    path('addHabit/', habit_views.HabitView.add_habit, name='habit-creation'),
-    path('drophabit/<int:habit_id>/', habit_views.HabitView.delete_habit, name='habit-deletion'),
-    path('edithabit/<int:habit_id>/', habit_views.HabitView.update_habit, name='habit-update'),
-    path('about/', habit_views.about, name='habit-about'),
-    path('ActiveHabits/', habit_views.AnalyticModel.active_habits, name = 'active_habits'),
-    path('habit/<int:habit_id>/', habit_views.AnalyticModel.habit_detail, name='habit_detail'),
-    path('HabitsAnalysis/', habit_views.habit_analysis_view, name = 'HabitsAnalysis'),
+    path('about/', habit_views.HabitView.about, name='habit-about'),
+
+    path('addHabit/', habit_views.HabitManager.add_habit, name='habit-creation'),
+    path('drophabit/<int:habit_id>/', habit_views.HabitManagerView.delete_habit, name='habit-deletion'),
+    path('ActiveHabits/', habit_views.HabitManager.active_habits, name = 'active_habits'),
+    path('habit/<int:habit_id>/', habit_views.HabitManagerView.habit_detail, name='habit_detail'),
+
+    path('HabitsAnalysis/', habit_views.AnalyticView.habit_analysis_view, name = 'HabitsAnalysis'),
 
 ]

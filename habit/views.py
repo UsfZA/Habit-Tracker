@@ -1,12 +1,10 @@
 from datetime import timedelta
-from django.urls import reverse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.db.models import Max
 from django.http import JsonResponse, HttpResponseNotFound
 from django.utils import timezone
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
+from django.db.models import Max
 from Users.utils import update_profile
 from .forms import HabitForm
 from .models import TaskTracker, Habit, Streak, Achievement
@@ -21,7 +19,7 @@ from .analytics import (
 
 
 
-class HabitView():
+class HabitView(TaskTracker):
     @staticmethod
     def habit_home(request):
         """
@@ -105,10 +103,10 @@ class HabitView():
 
             return render(request, 'home.html', context)
 
-    @staticmethod
-    def add_habit(request):
+
+    def about(request):
         """
-        View function to handle adding a new habit.
+        View function to display the About page.
 
         Args:
             request (HttpRequest): The HTTP request.
@@ -119,114 +117,10 @@ class HabitView():
         if not request.user.is_authenticated:
             return redirect('login')
         else:
-            if request.method == 'POST':
-                form = HabitForm(request.POST)
-                if form.is_valid():
-                    # Validate if the goal is smaller than the period
-                    if not form.is_goal_achievable():
-                        messages.error(request, '''The frequency results in a goal that is not
-                                    achievable. Choose a longer goal.''')
-                        return render(request, 'add_habit.html', {'form': form})
+            return render(request, 'about.html', {'title': 'About'})
+        
 
-                    # Validate if the habit name is not already used or existed
-                    if not form.is_valid_habit_name(request.user):
-                        messages.error(request, "You already used that name for another habit")
-                        return render(request, 'add_habit.html', {'form': form})
-
-                    habit = form.save(commit=False)
-                    habit.user = request.user
-                    habit.save()
-
-                    # Create tasks with their due and start dates for the habit
-                    # to populate the Task table
-                    TaskTracker.create_tasks(habit)
-                    # Initiate a streak on Streak table
-                    Streak.initiate_streak(habit)
-                    # Update user's profile to increment the number of habits
-                    update_profile(request.user)
-
-                    habit_name = form.cleaned_data.get('name')
-                    messages.success(request, f'{habit_name} Habit created')
-                    return redirect('habit-home')
-            else:
-                form = HabitForm()
-
-            return render(request, 'add_habit.html', {'form': form})
-
-    @staticmethod
-    def delete_habit(request, habit_id):
-        if not request.user.is_authenticated:
-            return redirect('login')
-        else:
-            habit = get_object_or_404(Habit, pk=habit_id)
-
-            
-            if request.method == 'POST':
-                try:
-                    habit.delete()
-                    messages.success(request, f"{habit.name} Habit deleted successfully")
-                    return redirect('active_habits')
-                except Habit.DoesNotExist:
-                    return HttpResponseNotFound("Habit does not exist")
-            
-            return render(request, 'habit_confirm_delete.html', {'habit': habit})
-
-
-    @staticmethod
-    def update_habit(request, habit_id):
-        if not request.user.is_authenticated:
-            return redirect('login')
-        else:
-            habit = get_object_or_404(Habit, pk=habit_id)
-            failed_tasks = get_object_or_404(Streak, habit_id=habit_id).num_of_failed_tasks
-            num_of_complted_tasks = habit.num_of_completed_tasks
-            now = timezone.now()
-            if request.method == 'POST':
-                form = HabitForm(request.POST, instance=habit)
-                if form.is_valid():
-                    # Validate if the goal is smaller than the period
-                    if not form.is_goal_achievable():
-                        messages.error(request, '''The frequency results in a goal that is not
-                                    achievable. Choose a longer goal.''')
-                        return render(request, 'add_habit.html', {'form': form})
-
-                    # Save the form to update the habit
-                    habit = form.save(commit=False)
-
-                    # Retrieve the maximum task number
-                    max_task_number_query = TaskTracker.objects.filter(habit_id=habit_id, task_status='Completed').aggregate(max_task_number=Max('task_number'))
-                    max_task_number = max_task_number_query['max_task_number']
-
-                    # delete incomplted tasks
-                    TaskTracker.objects.filter(habit=habit, task_status = 'In progress').delete()
-
-                    # Calculate or update num_of_tasks 
-                    num_of_period = convert_period_to_days(habit.period)
-                    habit.num_of_tasks = (habit.goal // num_of_period) * habit.frequency
-
-                    # Calculate or update completion_date if it's not provided in the form
-                    habit.completion_date = now + timedelta(hours=habit.goal * 24)
-
-                    # create new tasks for the habit
-                    TaskTracker.create_tasks(habit, max_task_number)
-
-                    #  Add progress on goal to the new goal
-                    habit.goal = habit.goal + (now - habit.creation_time).days
-
-                    # add completed task to the new num of tasks
-                    habit.num_of_tasks = habit.num_of_tasks + num_of_complted_tasks + failed_tasks
-
-                    # Save the form to update the habit
-                    habit = form.save()   
-
-                    messages.success(request, f"{habit.name} Habit updated successfully")
-                    return redirect('active_habits')
-            else:
-                form = HabitForm(instance=habit)
-            return render(request, 'habit_update.html', {'form': form, 'habit': habit})
-
-
-class AnalyticModel():
+class HabitManagerView():
     @staticmethod
     def active_habits(request):
         """
@@ -304,59 +198,112 @@ class AnalyticModel():
             }
 
             return render(request, 'habit_details.html', context)
+        
+    @staticmethod
+    def add_habit(request):
+        """
+        View function to handle adding a new habit.
 
+        Args:
+            request (HttpRequest): The HTTP request.
 
-def habit_analysis_view(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
-    else:
-        user_id = request.user.id
+        Returns:
+            HttpResponse: The HTTP response.
+        """
+        if not request.user.is_authenticated:
+            return redirect('login')
+        else:
+            if request.method == 'POST':
+                form = HabitForm(request.POST)
+                if form.is_valid():
+                    # Validate if the goal is smaller than the period
+                    if not form.is_goal_achievable():
+                        messages.error(request, '''The frequency results in a goal that is not
+                                    achievable. Choose a longer goal.''')
+                        return render(request, 'add_habit.html', {'form': form})
 
-        # Retrieve all tracked habits and filter them by period
-        all_habits = all_tracked_habits(user_id=user_id)
-        daily_habits = habits_by_period('daily')(all_habits)
-        weekly_habits = habits_by_period('weekly')(all_habits)
-        monthly_habits = habits_by_period('monthly')(all_habits)
+                    # Validate if the habit name is not already used or existed
+                    if not form.is_valid_habit_name(request.user):
+                        messages.error(request, "You already used that name for another habit")
+                        return render(request, 'add_habit.html', {'form': form})
 
-        # Retrieve the habit with the longest streak
-        longest_current_all_streak = longest_current_streak_over_all_habits()
+                    habit = form.save(commit=False)
+                    habit.user = request.user
+                    habit.save()
 
-        longest_all_streak = longest_streak_over_all_habits()
+                    # Create tasks with their due and start dates for the habit
+                    # to populate the Task table
+                    TaskTracker.create_tasks(habit)
+                    # Initiate a streak on Streak table
+                    Streak.initiate_streak(habit)
+                    # Update user's profile to increment the number of habits
+                    update_profile(request.user)
 
-        calculate_progress(all_habits)
-        calculate_progress(daily_habits)
-        calculate_progress(weekly_habits)
-        calculate_progress(monthly_habits)
-        calculate_progress(longest_all_streak)
-        calculate_progress(longest_current_all_streak)
+                    habit_name = form.cleaned_data.get('name')
+                    messages.success(request, f'{habit_name} Habit created')
+                    return redirect('habit-home')
+            else:
+                form = HabitForm()
 
+            return render(request, 'add_habit.html', {'form': form})
+
+    @staticmethod
+    def delete_habit(request, habit_id):
+        if not request.user.is_authenticated:
+            return redirect('login')
+        else:
+            habit = get_object_or_404(Habit, pk=habit_id)
+
+            
+            if request.method == 'POST':
+                try:
+                    habit.delete()
+                    messages.success(request, f"{habit.name} Habit deleted successfully")
+                    return redirect('active_habits')
+                except Habit.DoesNotExist:
+                    return HttpResponseNotFound("Habit does not exist")
+            
+            return render(request, 'habit_confirm_delete.html', {'habit': habit})
         
 
-        # Construct the context dictionary
-        context = {
-            'all_habits': all_habits,
-            'daily_habits': daily_habits,
-            'weekly_habits': weekly_habits,
-            'monthly_habits': monthly_habits,
-            'longest_all_streak': longest_all_streak,
-            'longest_current_all_streak': longest_current_all_streak
-        }
 
-        # Render the template with the context data
-        return render(request, 'analysis.html', context)
+class AnalyticView():
+    def habit_analysis_view(request):
+        if not request.user.is_authenticated:
+            return redirect('login')
+        else:
+            user_id = request.user.id
+
+            # Retrieve all tracked habits and filter them by period
+            all_habits = all_tracked_habits(user_id=user_id)
+            daily_habits = habits_by_period('daily')(all_habits)
+            weekly_habits = habits_by_period('weekly')(all_habits)
+            monthly_habits = habits_by_period('monthly')(all_habits)
+
+            # Retrieve the habit with the longest streak
+            longest_current_all_streak = longest_current_streak_over_all_habits()
+
+            longest_all_streak = longest_streak_over_all_habits()
+
+            calculate_progress(all_habits)
+            calculate_progress(daily_habits)
+            calculate_progress(weekly_habits)
+            calculate_progress(monthly_habits)
+            calculate_progress(longest_all_streak)
+            calculate_progress(longest_current_all_streak)
+
+            
+
+            # Construct the context dictionary
+            context = {
+                'all_habits': all_habits,
+                'daily_habits': daily_habits,
+                'weekly_habits': weekly_habits,
+                'monthly_habits': monthly_habits,
+                'longest_all_streak': longest_all_streak,
+                'longest_current_all_streak': longest_current_all_streak
+            }
+
+            # Render the template with the context data
+            return render(request, 'analysis.html', context)
         
-    
-def about(request):
-    """
-    View function to display the About page.
-
-    Args:
-        request (HttpRequest): The HTTP request.
-
-    Returns:
-        HttpResponse: The HTTP response.
-    """
-    if not request.user.is_authenticated:
-        return redirect('login')
-    else:
-        return render(request, 'about.html', {'title': 'About'})
