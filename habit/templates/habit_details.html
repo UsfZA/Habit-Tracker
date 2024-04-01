@@ -4,96 +4,98 @@
     {% if habit %}
         <div class="container mt-3">
             <div class="row">
-                <div class="col-md-12">
-                    <div class="card">
-                        <h1 class="card-header"> {{ habit.name.capitalize }} Habit Infos </h1>
+                <div class="col-md-6">
+                    <div class="card streak-card mb-4">
+                        <h2 class="card-header">{{ habit.name.capitalize }} Habit Infos</h2>
                         
                         <div class="card-body">
                             <h4 class="card-subtitle mb-1 text-muted">{{ habit.period.capitalize }} Habit</h4>
                             <p><i class="bi bi-person mt-2"></i> <strong>Habit Name:</strong> {{ habit.name.capitalize }}</p>
                             <p><i class="bi bi-calendar"></i> <strong>Started:</strong> {{ habit.creation_time|date:"F d, Y" }} at {{ habit.creation_time|date:"g:i A" }}</p>
                             <p><i class="bi bi-calendar"></i> <strong>Completion date:</strong> {{ habit.completion_date|date:"F d, Y" }} at {{ habit.completion_date|date:"g:i A" }}</p>
-                            <h4 class="mt-1"><strong>Progress</strong></h4>
-                            <div class ="row">
-                                <div class="col text-left">
+                            <h4 class="mt-3"><strong>Progress</strong></h4>
+                            <div class="row">
+                                <div class="col">
                                     <p><i class="bi bi-check2"></i> <strong>Total Tasks:</strong> {{ habit.num_of_tasks }}</p>
                                 </div>
-                                <div class="col text-rightt">
+                                <div class="col">
                                     <p><i class="bi bi-check2"></i> <strong>Tasks In progress:</strong> {{ habit.num_of_tasks|sub:habit.num_of_completed_tasks|sub:streak.num_of_failed_tasks}}</p>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col text-left">
+                                <div class="col">
                                     <p><i class="bi bi-check2"></i> <strong>Completed Tasks:</strong> {{ habit.num_of_completed_tasks }} </p>
                                 </div>
-                                <div class="col text-rightt">
+                                <div class="col">
                                     <p><i class="bi bi-check2"></i> <strong>Failed Tasks:</strong> {{ streak.num_of_failed_tasks }}</p>
                                 </div>
                             </div>
-                            <h4 class="mt-1"><strong>Streak</strong></h4>
+                            <h4 class="mt-3"><strong>Streak</strong></h4>
                             <div class ="row">
-                                <div class="col text-left">
+                                <div class="col">
                                     <p><i class="bi bi-check2"></i> <strong>Longest Streak:</strong> {{ streak.longest_streak }}</p>
                                 </div>
-                                <div class="col text-rightt">
+                                <div class="col">
                                     <p><i class="bi bi-check2"></i> <strong>Current Streak:</strong> {{ streak.current_streak }}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <button class="btn btn-primary mt-2 ml-3" onclick="showTasks('task')">Task log</button>
-        <button class="btn btn-primary mt-2 ml-3" onclick="showTasks('streak')">Streak log</button>
-        <div class="container mt-3" id="task-log" >
-            <div class="row">
-                <div class="col-md-12">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Task Number</th>
-                                <th>Status</th>
-                                <th>Task Completion Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for task in tasks %}
-                                {% if task.task_status == 'Completed' or task.task_status == 'Failed' %}
-                                <tr>
-                                    <td>{{ forloop.counter }}</td>
-                                    <td>{{ task.task_status }}</td>
-                                    <td>{{ task.task_completion_date }}</td>
-                                </tr>
-                                {% endif %}
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+                <div class="col-md-6">
+                    <button class="btn btn-primary mt-3 ml-3" onclick="showTasks('task')">Task log</button>
+                    <button class="btn btn-primary mt-3 ml-3" onclick="showTasks('streak')">Streak log</button>
+                    <div class="container mt-3" id="task-log">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>N</th>
+                                            <th>Status</th>
+                                            <th>Completion Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for task in tasks %}
+                                            {% if task.task_status == 'Completed' or task.task_status == 'Failed' %}
+                                                <tr>
+                                                    <td>{{ forloop.counter }}</td>
+                                                    <td>{{ task.task_status }}</td>
+                                                    <td>{{ task.task_completion_date }}</td>
+                                                </tr>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
 
-        <div class="container mt-3" id="streak-log" >
-            <div class="row">
-                <div class="col-md-12">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Streak Id</th>
-                                <th>Streak</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for streak in achievement %}
-                                <tr>
-                                    <td>{{ forloop.counter }}</td>
-                                    <td>{{ streak.title }}</td>
-                                    <td>{{ streak.date }}</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                    <div class="container mt-5" id="streak-log">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Id</th>
+                                            <th>Streak</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for streak in achievement %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ streak.title }}</td>
+                                                <td>{{ streak.date }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

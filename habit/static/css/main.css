@@ -1,8 +1,14 @@
 body {
     background: #f6f2f5;
     color: #333333;
+    margin: 0 auto; /* Add margin to center the content horizontally */
+    max-width: 2000px; /* Optionally, set a maximum width for the content */
+    padding: 0 20px; /* Optionally, add padding to the sides */
     margin-top: 5rem;
+    padding-left: 200px; /* Add padding to the left side */
+
 }
+
 
 h1, h2, h3, h4, h5, h6 {
     color: #444444;
@@ -29,48 +35,13 @@ ul {
 }
 
 .content-section {
-    background: #7bebb5;
+    background: #ebad7b;
     padding: 10px 20px;
     border: 1px solid #dddddd;
     border-radius: 3px;
     margin-bottom: 20px;
 }
 
-.article-title {
-    color: #444444;
-}
-
-a.article-title:hover {
-    color: #428bca;
-    text-decoration: none;
-}
-
-.article-content {
-    white-space: pre-line;
-}
-
-.article-img {
-    height: 65px;
-    width: 65px;
-    margin-right: 16px;
-}
-
-.article-metadata {
-    padding-bottom: 1px;
-    margin-bottom: 4px;
-    border-bottom: 1px solid #e3e3e3;
-}
-
-.article-metadata a:hover {
-    color: #333;
-    text-decoration: none;
-}
-
-.article-svg {
-    width: 25px;
-    height: 25px;
-    vertical-align: middle;
-}
 
 .account-img {
     height: 125px;
@@ -107,7 +78,7 @@ a.article-title:hover {
 .streak-card {
     background-color: #f0f0f0; /* Light gray background color */
     border-radius: 10px; /* Rounded corners */
-    padding: 20px; /* Padding around the card */
+    padding: 10px; /* Padding around the card */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Box shadow for a subtle elevation effect */
     display: flex;
     flex-direction: column;
@@ -115,9 +86,15 @@ a.article-title:hover {
     justify-content: center; /* Center content vertically */
 }
 
+
 .streak-label {
     font-weight: bold;
     font-size: 18px; /* Font size for the label */
+    color: #333; /* Dark gray text color */
+}
+.streak-label {
+    font-weight: bold;
+    font-size: 12px; /* Font size for the label */
     color: #333; /* Dark gray text color */
 }
 
@@ -140,3 +117,145 @@ a.article-title:hover {
     margin-bottom: 15px; /* Add some spacing below the title */
     font-family: 'Arial', sans-serif; /* Specify the font family */
 }
+
+.container {
+    width: 95%; /* Set the width to 90% of the viewport width */
+    max-width: 2000px; /* Set a maximum width to prevent the content from becoming too wide */
+    margin: center; /* Center the container horizontally */
+}
+
+/* Add padding to the left side of the navbar */
+.navbar {
+    padding-left: 100px;
+}
+
+/* Style the table */
+.table {
+    width: 100%; /* Make the table fill its container */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Box shadow for a subtle elevation effect */
+    background-color: #f0f0f0; /* Light gray background color */
+    padding: 10px; /* Padding around the table */
+    margin-top: 0px; /* Add margin on top to separate from the card */
+}
+
+.table th,
+.table td {
+    padding: 8px; /* Add padding inside table cells */
+    border: oklch(lightness chroma hue); /* Remove borders between cells */
+    text-align: left; /* Align text to the left within cells */
+}
+
+.table th {
+    background-color: #dcdcdc; /* Set background color for table headers */
+}
+
+
+.btn {
+    border-radius: 15px; /* Round the corners */
+    padding: 10px 20px; /* Add padding */
+    font-size: 14px; /* Increase font size */
+    font-weight: bold; /* Make the font bold */
+    transition: all 0.3s ease; /* Smooth transition */
+}
+
+.btn-primary {
+    background-color: #3498db; /* Change background color for primary button */
+    border-color: #3498db; /* Change border color for primary button */
+    color: #ffffff; /* Change text color for primary button */
+}
+
+.btn-primary:hover {
+    background-color: #2980b9; /* Darken background color on hover for primary button */
+    border-color: #2980b9; /* Darken border color on hover for primary button */
+}
+
+.btn-danger {
+    background-color: #e74c3c; /* Change background color for danger button */
+    border-color: #e74c3c; /* Change border color for danger button */
+    color: #ffffff; /* Change text color for danger button */
+}
+
+.btn-danger:hover {
+    background-color: #c0392b; /* Darken background color on hover for danger button */
+    border-color: #c0392b; /* Darken border color on hover for danger button */
+}
+
+.btn-success {
+    background-color: #2ecc71; /* Change background color for success button */
+    border-color: #2ecc71; /* Change border color for success button */
+    color: #ffffff; /* Change text color for success button */
+}
+
+.btn-success:hover {
+    background-color: #27ae60; /* Darken background color on hover for success button */
+    border-color: #27ae60; /* Darken border color on hover for success button */
+}
+
+.btn-info {
+    background-color: #3498db; /* Change background color for info button */
+    border-color: #3498db; /* Change border color for info button */
+    color: #ffffff; /* Change text color for info button */
+}
+
+.btn-info:hover {
+    background-color: #2980b9; /* Darken background color on hover for info button */
+    border-color: #2980b9; /* Darken border color on hover for info button */
+}
+
+.btn-warning {
+    background-color: #f39c12; /* Change background color for warning button */
+    border-color: #f39c12; /* Change border color for warning button */
+    color: #212529; /* Change text color for warning button */
+}
+
+.btn-warning:hover {
+    background-color: #d35400; /* Darken background color on hover for warning button */
+    border-color: #d35400; /* Darken border color on hover for warning button */
+}
+
+
+/* Add this CSS to your main.css file or create a new CSS file and link it in your HTML */
+
+/* Dropdown menu */
+.form-select {
+    width: 60%; /* Make the dropdown menu full width */
+    padding: 0.5rem 1rem; /* Add padding */
+    font-size: 16px; /* Increase font size */
+    border-radius: 8px; /* Round the corners */
+    border: 1px solid #ced4da; /* Add border */
+    background-color: #ffffff; /* Set background color */
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; /* Smooth transition */
+    text-transform: capitalize; /* Capitalize the text */
+
+}
+
+/* Style the options within the dropdown */
+.form-select option {
+    padding: 0.5rem 1rem; /* Add padding */
+    font-size: 16px; /* Increase font size */
+}
+
+
+/* Progress bar */
+.progress {
+    height: 20px; /* Set the height of the progress bar */
+    border-radius: 8px; /* Round the corners */
+    background-color: #d2e9ff; /* Set lighter blue background color */
+}
+
+.progress-bar {
+    border-radius: 8px; /* Round the corners */
+    color: #007bff; /* Set shade of blue color */
+}
+
+.progress-text {
+    font-size: 16px; /* Set font size */
+    margin-bottom: 0; /* Remove margin bottom */
+}
+
+
+.bg-blue {
+    background-color: #007bff; /* Desired shade of blue */
+}
+
