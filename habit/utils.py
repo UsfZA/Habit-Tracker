@@ -6,9 +6,6 @@ These functions include conversion functions and other helper methods.
 """
 
 
-
-
-
 def convert_goal_to_days(value: str) -> int:
     """
     Convert a goal duration string to the corresponding number of days.

@@ -24,19 +24,19 @@ from habit import views as habit_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', auth_views.LoginView.as_view(template_name='Users/login.html'), name='login'),
-    path('register/', user_views.register, name='register'),
-    path('profile/', user_views.profile, name='profile'),
-    path('logout', auth_views.LogoutView.as_view(template_name='Users/logout.html'), name='logout'),
+    path('Login', auth_views.LoginView.as_view(template_name='Users/login.html'), name='login'),
+    path('Register/', user_views.register, name='register'),
+    path('Profile/', user_views.profile, name='profile'),
+    path('Logout', auth_views.LogoutView.as_view(template_name='Users/logout.html'), name='logout'),
 
-    path('home/', habit_views.HabitView.habit_home, name='habit-home'),
-    path('about/', habit_views.HabitView.about, name='habit-about'),
+    path('', habit_views.HabitView.as_view(), name='habit-home'),
+    path('About/', habit_views.HabitView.about, name='habit-about'),
 
-    path('addHabit/', habit_views.HabitManagerView.add_habit, name='habit-creation'),
-    path('drophabit/<int:habit_id>/', habit_views.HabitManagerView.delete_habit, name='habit-deletion'),
-    path('ActiveHabits/', habit_views.HabitManagerView.active_habits, name = 'active_habits'),
-    path('habit/<int:habit_id>/', habit_views.HabitManagerView.habit_detail, name='habit_detail'),
+    path('Add-Habit/', habit_views.HabitManagerView.add_habit, name='habit-creation'),
+    path('delete-habit/<int:habit_id>/', habit_views.HabitManagerView.delete_habit, name='habit-deletion'),
+    path('Habit-Manager/', habit_views.HabitManagerView.active_habits, name = 'active_habits'),
+    path('Habit-details/<int:habit_id>/', habit_views.HabitManagerView.habit_detail, name='habit_detail'),
 
-    path('HabitsAnalysis/', habit_views.AnalyticView.habit_analysis_view, name = 'HabitsAnalysis'),
+    path('Habits-Analysis/', habit_views.HabitAnalysis.as_view(), name = 'HabitsAnalysis'),
 
 ]

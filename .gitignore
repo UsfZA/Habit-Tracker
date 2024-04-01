@@ -131,3 +131,8 @@ django3.log.txt
 
 #local settings
 local_settings.py
+
+
+#test
+pytest.ini
+tests

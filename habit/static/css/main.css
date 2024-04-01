@@ -104,3 +104,39 @@ a.article-title:hover {
 .custom-margin {
   margin-right: 20px; /* Adjust the value as needed */
 }
+.streak-card {
+    background-color: #f0f0f0; /* Light gray background color */
+    border-radius: 10px; /* Rounded corners */
+    padding: 20px; /* Padding around the card */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Box shadow for a subtle elevation effect */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center content horizontally */
+    justify-content: center; /* Center content vertically */
+}
+
+.streak-label {
+    font-weight: bold;
+    font-size: 18px; /* Font size for the label */
+    color: #333; /* Dark gray text color */
+}
+
+.streak-value {
+    font-size: 36px; /* Large font size for the streak value */
+    color: #007bff; /* Blue color for the streak value */
+    margin-top: 10px; /* Spacing between label and value */
+}
+
+.streak-info {
+    text-align: center; /* Center text */
+    margin-bottom: 15px; /* Add some spacing between streak info */
+}
+
+.card-title {
+    font-size: 24px; /* Font size for the card title */
+    font-weight: bold; /* Bold font weight */
+    text-align: center;
+    text-transform: capitalize; /* Capitalize the text */
+    margin-bottom: 15px; /* Add some spacing below the title */
+    font-family: 'Arial', sans-serif; /* Specify the font family */
+}

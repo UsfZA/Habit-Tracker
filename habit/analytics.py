@@ -10,16 +10,17 @@ from datetime import timedelta
 from django.utils import timezone
 from .models import TaskTracker, Habit, Streak
 from functools import partial
-from habit.models import TaskTracker
+from habit.models import TaskTracker, Achievement
 from django.db.models import Min
 
 
 
-
 def all_tracked_habits(user_id):
-    return Habit.objects.all().prefetch_related('streak')
+    return Habit.objects.filter(user_id=user_id,
+                                completion_date__gte=timezone.now()
+                                ).prefetch_related('streak')
 
-
+                                
 def habits_by_period(period):
     # Function to filter habits by period
     return partial(filter_habits_by_period, period)
@@ -56,6 +57,10 @@ def longest_current_streak_over_all_habits():
 
     """
     return Habit.objects.filter(id=Streak.objects.order_by('-current_streak').first().habit_id).prefetch_related('streak')
+
+
+def longest_streak_for_habit(habit_id):
+    return Habit.objects.filter(habit_id=habit_id).prefetch_related('streak')
 
 
 
@@ -143,3 +148,22 @@ def extract_first_failed_task(updated_task_ids):
         ).order_by('habit_id')
 
     return first_failed_tasks
+
+
+def update_user_activity(user_id):
+    # Update task status, and achievements
+    updated_habit_tasks_ids = TaskTracker.update_task_statuses(user_id=user_id)
+    updated_habit_ids, updated_task_ids = updated_habit_tasks_ids
+
+    # Escape and quote task IDs for safe use
+    # Define the SQL query with a placeholder for the parameter.
+    # Using a window function to calculate the rank based on the task number.
+    # This allows us to rank tasks within each habit, which is necessary to identify
+    # The first failed task for each habit is used later to correctly identify
+    # when the user breaks a Habit streak.
+    first_failed_tasks = extract_first_failed_task(updated_task_ids)
+    
+    # Update achievements if failed task
+    Achievement.update_achievements(first_failed_tasks)
+    Streak.update_streak(updated_habit_ids)
+

@@ -1,9 +1,10 @@
+
 {% extends "base.html" %}
 
 {% block content %}
     <h1 class="my-4">Habits Analysis</h1>
     <!-- Dropdown for selecting period -->
-    <div class="mb-4"> <!-- Add margin-bottom for spacing -->
+    <div class="mb-4">
         <select class="form-select" onchange="showHabits(this.value)">
             <option value="all">All tracked habits</option>
             <option value="daily">Daily habits</option>
@@ -11,10 +12,18 @@
             <option value="monthly">Monthly habits</option>
             <option value="longest-streak">Longest run streak over all defined habits</option>
             <option value="longest-current-streak">Longest current streak over all defined habits</option>
-            <option value="habit-longest-streak">Longest Streak for Habit :</option>
+            <option value="habit-longest-streak">Longest Streak for Habit:</option>
         </select>
     </div>
-    
+
+    <!-- Dropdown for selecting habit (hidden by default) -->
+    <div id="habit-dropdown" class="mb-4 d-none">
+        <select class="form-select" id="habit-select">
+            {% for habit in all_habits %}
+                <option value="{{ habit.id }}">{{ habit.name }} ({{ habit.period }})</option>
+            {% endfor %}
+        </select>
+    </div>    
     <div class="container">
         <div class="row">
             <div class="col-md-11">
@@ -60,6 +69,7 @@
                 </div>
                 <!-- Display Longest Current Streak -->
                 <div id="longest-current-streak-active-habits" style="display: none;">
+                    <div class="row">
                         {% for habit in longest_current_all_streak %}
                             {% include 'analysis_card.html' %}
                         {% endfor %}
@@ -69,8 +79,85 @@
         </div>
     </div>
 
+    <div class="container">
+        <div class="row">
+            <div class="col-md-11">
+                <!-- Habit Cards -->
+                <div id="habit-cards">
+                    <div class="row">
+                        <!-- Habit cards will be dynamically added here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Hide the habit dropdown on page load
+            document.getElementById('habit-dropdown').classList.add('d-none');
+
+            // Add an event listener to the habit dropdown to send an AJAX request
+            var habitSelect = document.getElementById('habit-select');
+            if (habitSelect) {
+                habitSelect.addEventListener('change', function() {
+                    var selectedValue = this.value;
+                    console.log("Selected habit ID:", selectedValue);
+                    
+                    // Send an AJAX request to retrieve data
+                    $.ajax({
+                        url: '',
+                        method: 'POST',
+                        data: {
+                            selectedValue: selectedValue,
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                        success: function(data) {
+                            console.log("Data retrieved:", data);
+
+                            // Clear existing habit cards
+                            var habitContainer = document.getElementById('habit-cards');
+                            habitContainer.innerHTML = '';
+
+                            // Create a new card element
+                            var card = document.createElement('div');
+                            card.classList.add('col-md-6', 'mb-4');
+                            card.innerHTML = `
+                                <div class="card streak-card">
+                                    <div class="card-body">
+                                        <h4 class="card-title">${data.name}</h4>
+                                        <div class="streak-info">
+                                            <div class="streak-label">Current Streak</div>
+                                            <div class="streak-value">${data.streak[0].current_streak}</div>
+                                        </div>
+                                        <div class="streak-info">
+                                            <div class="streak-label">Longest Streak</div>
+                                            <div class="streak-value">${data.streak[0].longest_streak}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            `;
+                            // Append the card to the container
+                            habitContainer.appendChild(card);
+                        },
+
+                        error: function(xhr, status, error) {
+                            console.error("Error:", error);
+                        }
+                    });
+                });
+            }
+        });
+    
         function showHabits(period) {
+            // If "Longest Streak for Habit" is selected, show the habit dropdown
+            if (period == 'habit-longest-streak') {
+                document.getElementById('habit-dropdown').classList.remove('d-none');
+            } else {
+                document.getElementById('habit-dropdown').classList.add('d-none');
+            }
+            
             // Hide all habit sections
             document.getElementById('all-active-habits').style.display = 'none';
             document.getElementById('daily-active-habits').style.display = 'none';
@@ -81,6 +168,14 @@
 
             // Show the selected habit section
             document.getElementById(`${period}-active-habits`).style.display = 'block';
+
+            // Hide the habit cards when selecting an option other than "Longest Streak for Habit"
+            if (period !== 'habit-longest-streak') {
+                document.getElementById('habit-cards').style.display = 'none';
+            } else {
+                document.getElementById('habit-cards').style.display = 'block';
+            }
         }
+
     </script>
 {% endblock %}
