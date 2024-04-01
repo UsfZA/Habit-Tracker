@@ -95,7 +95,6 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             // Hide the habit dropdown on page load
-            document.getElementById('habit-dropdown').classList.add('d-none');
 
             // Add an event listener to the habit dropdown to send an AJAX request
             var habitSelect = document.getElementById('habit-select');
@@ -157,7 +156,12 @@
             } else {
                 document.getElementById('habit-dropdown').classList.add('d-none');
             }
-            
+
+            if (period !== 'habit-longest-streak') {
+                document.getElementById('habit-cards').classList.add('d-none');
+            } else {
+                document.getElementById('habit-cards').classList.remove('d-none');
+            }
             // Hide all habit sections
             document.getElementById('all-active-habits').style.display = 'none';
             document.getElementById('daily-active-habits').style.display = 'none';
@@ -170,11 +174,7 @@
             document.getElementById(`${period}-active-habits`).style.display = 'block';
 
             // Hide the habit cards when selecting an option other than "Longest Streak for Habit"
-            if (period !== 'habit-longest-streak') {
-                document.getElementById('habit-cards').style.display = 'none';
-            } else {
-                document.getElementById('habit-cards').style.display = 'block';
-            }
+
         }
 
     </script>

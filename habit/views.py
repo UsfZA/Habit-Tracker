@@ -218,7 +218,7 @@ class HabitManagerView():
         if not request.user.is_authenticated:
             return redirect('login')
 
-        habit = get_object_or_404(pk=habit_id)
+        habit = get_object_or_404(Habit, pk=habit_id)
         tasks = TaskTracker.objects.filter(habit_id=habit_id)
         streak = Streak.objects.get(habit_id=habit_id)
         achievement = Achievement.objects.filter(habit_id=habit_id)
