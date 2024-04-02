@@ -4,10 +4,10 @@
     <h1 class="my-4">Active Habits</h1>
     <!-- Buttons for Daily, Weekly, Monthly, and All Tasks -->
     <div class="mb-4"> <!-- Add margin-bottom for spacing -->
-        <button class="btn btn-primary" onclick="showTasks('all')">All</button>
-        <button class="btn btn-warning" onclick="showTasks('daily')">Daily</button>
-        <button class="btn btn-warning" onclick="showTasks('weekly')">Weekly</button>
-        <button class="btn btn-warning" onclick="showTasks('monthly')">Monthly</button>
+        <button id="all-button" class="switcher-button" onclick="showTasks('all')">All</button>
+        <button id="daily-button" class="switcher-button" onclick="showTasks('daily')">Daily</button>
+        <button id="weekly-button" class="switcher-button" onclick="showTasks('weekly')">Weekly</button>
+        <button id="monthly-button" class="switcher-button" onclick="showTasks('monthly')">Monthly</button>
     </div>
     
     <div class="container">
@@ -64,7 +64,7 @@
             document.getElementById('monthly-active-habits').style.display = 'none';
 
             // Remove 'active' class from all buttons
-            var buttons = document.querySelectorAll('.btn');
+            var buttons = document.querySelectorAll('.switcher-button');
             buttons.forEach(function(button) {
                 button.classList.remove('active');
             });
@@ -73,7 +73,7 @@
             document.getElementById(`${period}-active-habits`).style.display = 'block';
 
             // Add 'active' class to the clicked button
-            document.querySelector(`button[data-period="${period}"]`).classList.add('active');
+            document.getElementById(`${period}-button`).classList.add('active');
         }
     </script>
 {% endblock %}

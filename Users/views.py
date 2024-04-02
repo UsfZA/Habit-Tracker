@@ -7,9 +7,6 @@ from .models import Profile
 
 
 
-def start_view(request):
-    pass
-
 def register(request):
     if request.method == 'POST':   
         form = UserRegisterForm(request.POST)
@@ -24,6 +21,7 @@ def register(request):
     else:
         form = UserRegisterForm()
     return render(request, 'Users/register.html', {'form': form})
+
 
 @login_required
 def profile(request):

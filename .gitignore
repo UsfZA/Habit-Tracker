@@ -136,3 +136,8 @@ local_settings.py
 #test
 pytest.ini
 tests
+
+#Docker
+Dockerfile
+docker-compose.yml
+secrets

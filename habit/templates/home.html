@@ -10,53 +10,62 @@
 
     <!-- Buttons for Daily, Weekly, and Monthly Tasks -->
     <div class="mb-4"> <!-- Add margin-bottom for spacing -->
-        <button class="btn btn-info active" onclick="showTasks('daily')">Due Today Tasks</button>
-        <button class="btn btn-warning" onclick="showTasks('weekly')">Active Tasks</button>
+        <button id="daily-tasks-button" class="switcher-button" onclick="showTasks('daily')">Due Today Tasks</button>
+        <button id="weekly-tasks-button" class="switcher-button" onclick="showTasks('weekly')">Active Tasks</button>
     </div>
+    
+    <!-- Buttons for Daily, Weekly, and Monthly Tasks -->
+    
 
     <!-- Display Due The next 24 hours Tasks -->
-    <div id="daily-tasks" class="card-deck mt-6">
+    <div id="daily-tasks" class="task-container">
         {% for task in due_today_tasks %}
-            <div class="card streak-card mb-2">
-                <div class="card-body">
-                    <form method="post" action="{% url 'habit-home' %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="task_id" value="{{ task.id }}">
-                        <input type="hidden" name="habit_id" value="{{ task.habit.id }}">
-                        <input type="hidden" name="task_status" value="Completed">
-                        <input type="hidden" id="task_{{ task.id }}" name="task_{{ task.id }}" habit_id="{{ task.habit.id }}">
-                        <label class="form-check-label" for="task_{{ task.id }}">
-                            {{ task.habit.name }} - Task {{ task.task_number }}
-                        </label>
-                        <p class="mt-2">Due: {{ task.due_date|date:"F d, Y" }} at {{ task.due_date|date:"g:i A" }}</p>
-                        <!-- Mark as Complete Button-->
-                        <button type="submit" class="btn btn-success mr-2 rounded-pill">Mark as Complete</button>
-                    </form>
+            <div class="col-md-8 mb-3">
+                <div class="card home-streak-card">
+                    <h5 class="home-card-title">{{ task.habit.name }}</h5>
+                    <div class="card-body">
+                        <form method="post" action="{% url 'habit-home' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="task_id" value="{{ task.id }}">
+                            <input type="hidden" name="habit_id" value="{{ task.habit.id }}">
+                            <input type="hidden" name="task_status" value="Completed">
+                            <input type="hidden" id="task_{{ task.id }}" name="task_{{ task.id }}" habit_id="{{ task.habit.id }}">
+                            <label class="form-check-label" for="task_{{ task.id }}">
+                                N of Task :{{ task.task_number }}
+                            </label>
+                            <p class="mt-2">Due: {{ task.due_date|date:"F d, Y" }} at {{ task.due_date|date:"g:i A" }}</p>
+                            <!-- Mark as Complete Button-->
+                            <button type="submit" class="btn btn-success">Mark as Complete</button>
+                        </form>
+                    </div>
                 </div>
-            </div>
+            </div>   
         {% endfor %}
     </div>
 
     <!-- Display The Started Tasks -->
-    <div id="weekly-tasks" style="display: none;" class="card-deck mt-4">
+    <div id="weekly-tasks" style="display: none;" class="task-container">
         {% for task in available_tasks %}
-            <div class="card streak-card mb-2">
-                <div class="card-body">
-                    <form method="post" action="{% url 'habit-home' %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="task_id" value="{{ task.id }}">
-                        <input type="hidden" name="habit_id" value="{{ task.habit.id }}">
-                        <input type="hidden" name="task_status" value="Completed">
-                        <input type="hidden" id="task_{{ task.id }}" name="task_{{ task.id }}" habit_id="{{ task.habit.id }}">
-                        <label class="form-check-label" for="task_{{ task.id }}">
-                            {{ task.habit.name }} - Task {{ task.task_number }}
-                        </label>
-                        <p class="mt-2">Due: {{ task.due_date|date:"F d, Y" }} at {{ task.due_date|date:"g:i A" }}</p>                        
-                        <!-- Mark as Complete Buttons -->
-                        <button type="submit" class="btn btn-success mr-2 rounded-pill">Mark as Complete</button>
-                    </form>
+            <div class="col-md-8 mb-3">
+                <div class="card home-streak-card">
+                    <h5 class="home-card-title">{{ task.habit.name }}</h5>
+                    <div class="card-body">
+                        <form method="post" action="{% url 'habit-home' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="task_id" value="{{ task.id }}">
+                            <input type="hidden" name="habit_id" value="{{ task.habit.id }}">
+                            <input type="hidden" name="task_status" value="Completed">
+                            <input type="hidden" id="task_{{ task.id }}" name="task_{{ task.id }}" habit_id="{{ task.habit.id }}">
+                            <label class="form-check-label" for="task_{{ task.id }}">
+                                N of Task :{{ task.task_number }}
+                            </label>
+                            <p class="mt-2">Due: {{ task.due_date|date:"F d, Y" }} at {{ task.due_date|date:"g:i A" }}</p>
+                            <!-- Mark as Complete Button-->
+                            <button type="submit" class="btn btn-success">Mark as Complete</button>
+                        </form>
+                    </div>
                 </div>
-            </div>
+            </div> 
         {% endfor %}
     </div>
 
@@ -72,7 +81,7 @@
             document.getElementById('weekly-tasks').style.display = 'none';
 
             // Remove 'active' class from all buttons
-            var buttons = document.querySelectorAll('.btn');
+            var buttons = document.querySelectorAll('.switcher-button');
             buttons.forEach(function(button) {
                 button.classList.remove('active');
             });
@@ -81,7 +90,8 @@
             document.getElementById(`${period}-tasks`).style.display = 'block';
 
             // Add 'active' class to the clicked button
-            document.querySelector(`button[data-period="${period}"]`).classList.add('active');
+            document.getElementById(`${period}-tasks-button`).classList.add('active');
         }
+
     </script>
 {% endblock %}

@@ -337,19 +337,18 @@ class Achievement(models.Model):
         streak : Streak
             The streak object representing the current streak.
         """
-        if streak.current_streak == 7:
+        habit = Habit.objects.get(pk=habit_id)  # Retrieve the Habit instance using the habit_id
+
+        if streak.current_streak == 7 and habit.period == 'daily':
             title = '7-Day Streak'
-            habit = Habit.objects.get(pk=habit_id)  # Retrieve the Habit instance using the habit_id
             cls.objects.create(habit=habit, date=timezone.now(), title=title,
                                streak_length=streak.current_streak)
-        if streak.current_streak == 14:
+        if streak.current_streak == 14 and habit.period == 'daily':
             title = '14-Day Streak'
-            habit = Habit.objects.get(pk=habit_id)  # Retrieve the Habit instance using the habit_id
             cls.objects.create(habit=habit, date=timezone.now(), title=title,
                                streak_length=streak.current_streak)
-        if streak.current_streak == 30:
+        if streak.current_streak == 30 and habit.period == 'daily':
             title = '30-Day Streak'
-            habit = Habit.objects.get(pk=habit_id)  # Retrieve the Habit instance using the habit_id
             cls.objects.create(habit=habit, date=timezone.now(), title=title,
                                streak_length=streak.current_streak)
             

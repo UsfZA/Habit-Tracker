@@ -249,7 +249,38 @@ class HabitManagerView():
         """
         if not request.user.is_authenticated:
             return redirect('login')
-        
+        pre_defined_habits = {
+                            'Exercise': {
+                                'frequency': '2',
+                                'period': 'weekly',
+                                'goal': '1 month',
+                                'notes': 'Exercising regularly to maintain physical fitness.'
+                            },
+                            'Reading': {
+                                'frequency': '1',
+                                'period': 'daily',
+                                'goal': '1 month',
+                                'notes': 'Reading habit for personal growth and learning.'
+                            },
+                            'Brush your Teeth': {
+                                'frequency': '2',
+                                'period': 'daily',
+                                'goal': '1 month',
+                                'notes': 'Reminder to maintain oral hygiene by brushing teeth twice daily.'
+                            },
+                            'Budgeting': {
+                                'frequency': '1',
+                                'period': 'weekly',
+                                'goal': '1 month',
+                                'notes': 'Budget finances regularly for financial stability and planning'
+                            },
+                            'Meditation': {
+                                'frequency': '1',
+                                'period': 'daily',
+                                'goal': '1 month',
+                                'notes': 'Daily meditation practice for mental well-being and stress relief.'
+                            }
+                        }
         if request.method == 'POST':
             form = HabitForm(request.POST)
             if form.is_valid():
@@ -282,7 +313,7 @@ class HabitManagerView():
         else:
             form = HabitForm()
 
-        return render(request, 'add_habit.html', {'form': form})
+        return render(request, 'add_habit.html', {'form': form, 'pre_defined_habits': pre_defined_habits})
 
     @staticmethod
     def delete_habit(request, habit_id):

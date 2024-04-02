@@ -35,7 +35,7 @@ urlpatterns = [
     path('Add-Habit/', habit_views.HabitManagerView.add_habit, name='habit-creation'),
     path('delete-habit/<int:habit_id>/', habit_views.HabitManagerView.delete_habit, name='habit-deletion'),
     path('Habit-Manager/', habit_views.HabitManagerView.active_habits, name = 'active_habits'),
-    path('Habit-details/<int:habit_id>/', habit_views.HabitManagerView.habit_detail, name='habit_detail'),
+    path('Habit-Infos/<int:habit_id>/', habit_views.HabitManagerView.habit_detail, name='habit_detail'),
 
     path('Habits-Analysis/', habit_views.HabitAnalysis.as_view(), name = 'HabitsAnalysis'),
 

@@ -2,8 +2,8 @@
 
 {% block content %}
     <div class="row justify-content-center">
-        <div class="col-md-6 d-flex align-items-center">
-            <div class="card signup-container">
+        <div class="col-md-9 ">
+            <div class="card add-habit-card">
                 <h2 class="card-header text-center">Sign up</h2>
                 <div class="card-body">
                     <form method="post">
@@ -68,8 +68,9 @@
                                 {% endfor %}
                             </div>
                         </div>
-
-                        <button type="submit" class="btn btn-primary btn-block">Sign up</button>
+                        <div class="col-sm-6 offset-sm-4">
+                            <button type="submit" class="btn btn-primary btn-block">Create Habit</button>
+                        </div>
                     </form>
                 </div>
                 <div class="card-footer text-center">
