@@ -36,7 +36,6 @@ INSTALLED_APPS = [
     'habit.apps.HabitConfig',
     'Users.apps.UsersConfig',
     'crispy_forms',
-    'mathfilters',
     'fontawesomefree',
     'django_extensions',
     'django.contrib.admin',
