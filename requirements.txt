@@ -1,6 +1,5 @@
 Django==4.1
 django-crispy-forms
-django-mathfilters==1.0.0
 fontawesomefree==6.5.1
 django_extensions==3.2.3
 pyodbc==5.0.1
@@ -9,3 +8,6 @@ sqlparse==0.4.4
 mysqlclient==2.2.4
 typing_extensions==4.9.0
 tzdata==2023.3
+numpy==1.26.4
+pillow==10.3.0
+pytest-django==4.8.0
