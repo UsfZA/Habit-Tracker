@@ -6,12 +6,11 @@
                 <h2 class="card-header text-center">Create a New Habit</h2>
                 <div class="card-body">
                     <!-- Separate the select dropdown from the form -->
-                    <!-- Separate the select dropdown from the form -->
                     <div class="form-group row">
                         <label for="habitSelect" class="col-sm-3 col-form-label text-right">Select Habit:</label>
                         <div class="col-sm-9">
                             <select id="habitSelect" onchange="populateForm()" class="form-control">
-                                <option value="">Chose Predefined Habits</option>
+                                <option value="">Choose Predefined Habits</option>
                                 {% for habit, details in pre_defined_habits.items %}
                                     <option value="{{ habit }}">{{ habit }}</option>
                                 {% endfor %}
@@ -50,7 +49,7 @@
                         </div>
                         
                         <div class="form-group row">
-                            <label for="{{ form.number_of_times.id_for_label }}" class="col-sm-3 col-form-label text-right">Period:</label>
+                            <label for="{{ form.period.id_for_label }}" class="col-sm-3 col-form-label text-right">Period:</label>
                             <div class="col-sm-9">
                                 {{ form.period }}
                                 {% for error in form.period.errors %}
@@ -70,6 +69,15 @@
                         </div>
                         
                         <div class="form-group row">
+                            <label for="{{ form.start_date.id_for_label }}" class="col-sm-3 col-form-label text-right">Start Date:</label>
+                            <div class="col-sm-9">
+                                <div class="input-group">
+                                    {{ form.start_date }}
+                                </div>
+                            </div>
+                        </div>
+                                             
+                        <div class="form-group row">
                             <label for="{{ form.notes.id_for_label }}" class="col-sm-3 col-form-label text-right">Notes:</label>
                             <div class="col-sm-9">
                                 {{ form.notes }}
@@ -86,7 +94,18 @@
             </div>
         </div>
     </div>
+
     <script>
+        // Initialize Bootstrap Datepicker with dropdown option
+        $(document).ready(function(){
+            console.log("Document ready function is being called."); // Added console.log() statement
+            $('#startDateInput').datepicker({
+                autoclose: true,
+                format: 'yyyy-mm-dd', // Adjust the date format as needed
+                container: '#startDateBtn'
+            });
+        });
+    
         function populateForm() {
             var select = document.getElementById("habitSelect");
             var habit = select.options[select.selectedIndex].value;
@@ -100,4 +119,5 @@
             document.getElementById("id_notes").value = habitDetails.notes;
         }
     </script>
+    
 {% endblock %}

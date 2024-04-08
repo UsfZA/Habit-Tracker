@@ -1,23 +1,40 @@
 from django.db import models
 from django.contrib.auth.models import User
-from habit.models import Habit #, Task
-from django.utils import timezone
+from habit.models import Habit
+import os
+from django.core.files import File
+from django.conf import settings
 
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete= models.CASCADE)
+    """
+    Model representing a user profile.
+
+    Attributes:
+    ----------
+        user (User): The associated user for the profile.
+        image (ImageField): The profile picture of the user.
+        full_name (CharField): The full name of the user.
+        active_habit (IntegerField): The number of active habits for the user.
+        email (EmailField): The email address of the user.
+        date_joined (DateTimeField): The date and time when the user joined.
+
+    """
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    image = models.ImageField(default='default.jpg', upload_to='profile_pics')
     full_name = models.CharField(max_length=255)
     active_habit = models.IntegerField(default=0)
     email = models.EmailField(default="unknown@example.com")
     date_joined = models.DateTimeField(null=True, blank=True)
-    #completed_habit = models.IntegerField(default=0)
-    #achievements = models.ImageField()
+
     def save(self, *args, **kwargs):
         """
         Override the save method to update profile fields based on the associated user and habits.
 
-        Args:
+        Parameters:
+        ----------
             *args: Additional arguments.
             **kwargs: Additional keyword arguments.
         """
@@ -25,6 +42,4 @@ class Profile(models.Model):
         self.active_habit = Habit.objects.filter(user=self.user).count()
         self.email = self.user.email
         self.date_joined = self.user.date_joined
-        #self.completed_habit = 
         super().save(*args, **kwargs)
-

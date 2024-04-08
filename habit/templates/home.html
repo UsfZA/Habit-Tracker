@@ -3,15 +3,17 @@
 {% block content %}
     <h1 class="mt-4">Welcome {{ user_full_name }}</h1>
 
-    <!-- Add Habit Button -->
+    <!-- Buttons for Add Habit, Habit Manger, Habit Analysis -->
     <a class="btn btn-primary mb-4" href="{% url 'habit-creation' %}">Add Habit</a>
     <a class="btn btn-danger mb-4" href="{% url 'active_habits' %}">Habit Manager</a>
     <a class="btn btn-success mb-4" href="{% url 'HabitsAnalysis' %}">Habit Analysis</a>
 
     <!-- Buttons for Daily, Weekly, and Monthly Tasks -->
-    <div class="mb-4"> <!-- Add margin-bottom for spacing -->
+    <div class="mb-4"> 
         <button id="daily-tasks-button" class="switcher-button" onclick="showTasks('daily')">Due Today Tasks</button>
         <button id="weekly-tasks-button" class="switcher-button" onclick="showTasks('weekly')">Active Tasks</button>
+        <button id="upcoming-tasks-button" class="switcher-button" onclick="showTasks('upcoming')">Upcoming Tasks</button>
+
     </div>
     
     <!-- Buttons for Daily, Weekly, and Monthly Tasks -->
@@ -23,6 +25,7 @@
             <div class="col-md-8 mb-3">
                 <div class="card home-streak-card">
                     <h5 class="home-card-title">{{ task.habit.name }}</h5>
+                    <h7 class="card-subtitle mb-1 text-muted">{{ task.habit.period.capitalize }} Habit</h7>
                     <div class="card-body">
                         <form method="post" action="{% url 'habit-home' %}">
                             {% csrf_token %}
@@ -43,12 +46,13 @@
         {% endfor %}
     </div>
 
-    <!-- Display The Started Tasks -->
+    <!-- Display Active Tasks -->
     <div id="weekly-tasks" style="display: none;" class="task-container">
         {% for task in available_tasks %}
             <div class="col-md-8 mb-3">
                 <div class="card home-streak-card">
                     <h5 class="home-card-title">{{ task.habit.name }}</h5>
+                    <h7 class="card-subtitle mb-1 text-muted">{{ task.habit.period.capitalize }} Habit</h7>
                     <div class="card-body">
                         <form method="post" action="{% url 'habit-home' %}">
                             {% csrf_token %}
@@ -68,7 +72,24 @@
             </div> 
         {% endfor %}
     </div>
-
+    <!-- Display Upcoming Tasks -->
+    <div id="upcoming-tasks" style="display: none;" class="task-container">
+        {% for task in upcoming_tasks %}
+            <div class="col-md-8 mb-3">
+                <div class="card home-streak-card">
+                    <h5 class="home-card-title">{{ task.habit.name }}</h5>
+                    <h7 class="card-subtitle mb-1 text-muted">{{ task.habit.period.capitalize }} Habit</h7>
+                    <div class="card-body">
+                        <label class="form-check-label" for="task_{{ task.id }}">
+                            N of Task :{{ task.task_number }}
+                        </label>
+                        <p class="mt-2">Start: {{ task.start_date|date:"F d, Y" }} at {{ task.due_date|date:"g:i A" }}</p>
+                        <p class="mt-2">Due: {{ task.due_date|date:"F d, Y" }} at {{ task.due_date|date:"g:i A" }}</p>
+                    </div>
+                </div>
+            </div> 
+        {% endfor %}
+    </div>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             // Display due today tasks by default
@@ -79,6 +100,8 @@
             // Hide all task sections
             document.getElementById('daily-tasks').style.display = 'none';
             document.getElementById('weekly-tasks').style.display = 'none';
+            document.getElementById('upcoming-tasks').style.display = 'none';
+
 
             // Remove 'active' class from all buttons
             var buttons = document.querySelectorAll('.switcher-button');

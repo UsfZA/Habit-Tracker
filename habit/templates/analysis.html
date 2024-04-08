@@ -10,6 +10,8 @@
             <option value="daily">Daily habits</option>
             <option value="weekly">Weekly habits</option>
             <option value="monthly">Monthly habits</option>
+            <option value="d-struggled-most">Daily Habit struggled most last month</option>
+            <option value="w-struggled-most">Weekly Habit struggled most last month</option>
             <option value="longest-streak">Longest run streak over all defined habits</option>
             <option value="longest-current-streak">Longest current streak over all defined habits</option>
             <option value="habit-longest-streak">Longest Streak for Habit:</option>
@@ -57,6 +59,50 @@
                         {% for habit in monthly_habits %}
                             {% include 'analysis_card.html' %}
                         {% endfor %}
+                    </div>
+                </div>
+                <div id="d-struggled-most-active-habits" style="display: none;">
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card streak-card">
+                                <div class="card-body d-flex flex-column">
+                                    <h4 class="card-title">{{ daily_struggled_most.name }}</h4>
+                                    {% with streak=daily_struggled_most.streak.first %}
+                                        <div class="streak-info">
+                                            <div class="streak-label">Failed Tasks</div>
+                                            <div class="streak-value">{% if streak.num_of_failed_tasks %}{{ streak.num_of_failed_tasks }}{% else %}0{% endif %}</div> 
+                                        </div>
+                                        <div class="streak-info">
+                                            <div class="streak-label">Longest Streak</div>
+                                            <div class="streak-value">{{ streak.longest_streak }}</div>
+                                        </div>
+                                    {% endwith %}
+                                    <a class="btn btn-text btn-block mt-1" href="{% url 'habit_detail' habit_id=daily_struggled_most.id %}">More Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="w-struggled-most-active-habits" style="display: none;">
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card streak-card">
+                                <div class="card-body d-flex flex-column">
+                                    <h4 class="card-title">{{ weekly_struggled_most.name }}</h4>
+                                    {% with streak=weekly_struggled_most.streak.first %}
+                                        <div class="streak-info">
+                                            <div class="streak-label">Failed Tasks</div>
+                                            <div class="streak-value">{% if streak.num_of_failed_tasks %}{{ streak.num_of_failed_tasks }}{% else %}0{% endif %}</div> 
+                                        </div>
+                                        <div class="streak-info">
+                                            <div class="streak-label">Longest Streak</div>
+                                            <div class="streak-value">{{ streak.longest_streak }}</div>
+                                        </div>
+                                    {% endwith %}
+                                    <a class="btn btn-text btn-block mt-1" href="{% url 'habit_detail' habit_id=daily_struggled_most.id %}">More Details</a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <!-- Display Longest Streak -->
@@ -203,14 +249,13 @@
             document.getElementById('daily-active-habits').style.display = 'none';
             document.getElementById('weekly-active-habits').style.display = 'none';
             document.getElementById('monthly-active-habits').style.display = 'none';
+            document.getElementById('d-struggled-most-active-habits').style.display = 'none';
+            document.getElementById('w-struggled-most-active-habits').style.display = 'none';
             document.getElementById('longest-streak-active-habits').style.display = 'none';
             document.getElementById('longest-current-streak-active-habits').style.display = 'none';
 
             // Show the selected habit section
             document.getElementById(`${period}-active-habits`).style.display = 'block';
-
-            // Hide the habit cards when selecting an option other than "Longest Streak for Habit"
-
         }
 
     </script>

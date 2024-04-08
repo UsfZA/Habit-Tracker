@@ -1,9 +1,16 @@
 """
-Utility functions for the Habit application.
+This module includes functions for analyzing habit data, such as calculating progress,
+extracting first failed tasks, updating user activity, and ranking habits based on scores.
 
 This module contains various utility functions used across the Habit application.
-These functions include conversion functions and other helper methods.
+These functions include retrieval of tracked habits, filtering habits by period,
+calculation of progress percentage, updating task statuses and achievements,
+calculation of habit scores, normalization of scores, ranking of habits based on scores,
+and analysis of habit data.
+
+
 """
+
 
 
 from datetime import timedelta
@@ -11,35 +18,76 @@ from django.utils import timezone
 from .models import TaskTracker, Habit, Streak
 from functools import partial
 from habit.models import TaskTracker, Achievement
-from django.db.models import Min
-
+from django.db.models import Min, Prefetch
+import numpy as np
 
 
 def all_tracked_habits(user_id):
+    """
+    Retrieve all tracked habits for a given user.
+
+    Parameters
+    ----------
+    user_id : int
+        The ID of the user for whom habits are to be retrieved.
+
+    Returns
+    -------
+    QuerySet
+        A queryset containing all tracked habits for the user, including streak information.
+
+    """
     return Habit.objects.filter(user_id=user_id,
                                 completion_date__gte=timezone.now()
                                 ).prefetch_related('streak')
 
-                                
+
 def habits_by_period(period):
-    # Function to filter habits by period
+    """
+    Return a function to filter habits by period.
+
+    Parameters
+    ----------
+    period : str
+        The period to filter habits by.
+
+    Returns
+    -------
+    function
+        A function that can be used to filter habits by the specified period.
+
+    """
     return partial(filter_habits_by_period, period)
 
 
 def filter_habits_by_period(period, habits):
-    # Function to filter habits by period
+    """
+    Filter habits by a specified period.
+
+    Parameters
+    ----------
+    period : str
+        The period to filter habits by.
+    habits : QuerySet
+        A queryset containing habits to be filtered.
+
+    Returns
+    -------
+    QuerySet
+        A filtered queryset containing habits filtered by the specified period.
+
+    """
     return habits.filter(period=period)
 
 
 def longest_streak_over_all_habits():
     """
-    Retrieve habit_id of the habit with the longest streak from Streak table.
+    Retrieve the habit ID of the habit with the longest streak from the Streak table.
 
-    Args:
-        None.
-
-    Returns:
-        Habit_id
+    Returns
+    -------
+    int
+        The habit ID of the habit with the longest streak.
 
     """
     return Habit.objects.filter(id=Streak.objects.order_by('-longest_streak').first().habit_id).prefetch_related('streak')
@@ -47,37 +95,54 @@ def longest_streak_over_all_habits():
 
 def longest_current_streak_over_all_habits():
     """
-    Retrieve habit_id of the habit with the longest streak from Streak table.
+    Retrieve the habit ID of the habit with the longest current streak from the Streak table.
 
-    Args:
-        None.
-
-    Returns:
-        Habit_id
+    Returns
+    -------
+    int
+        The habit ID of the habit with the longest current streak.
 
     """
     return Habit.objects.filter(id=Streak.objects.order_by('-current_streak').first().habit_id).prefetch_related('streak')
 
 
-def longest_streak_for_habit(habit_id):
-    return Habit.objects.filter(habit_id=habit_id).prefetch_related('streak')
+def longest_streak_for_habit(id):
+    """
+    Retrieve the longest streak for a specific habit.
 
+    Parameters
+    ----------
+    id : int
+        The ID of the habit for which the longest streak is to be retrieved.
+
+    Returns
+    -------
+    Habit
+        The habit object with the longest streak, including streak information.
+
+    """
+    return Habit.objects.prefetch_related('streak').get(id=id)
+    
 
 
 def due_today_tasks(user_id):
     """
     Retrieve tasks due today for a given user.
 
-    Args:
-        user_id (int): The ID of the user for whom tasks are to be retrieved.
+    Parameters
+    ----------
+    user_id : int
+        The ID of the user for whom tasks are to be retrieved.
 
-    Returns:
-        QuerySet: A queryset containing tasks due today for the user.
+    Returns
+    -------
+    QuerySet
+        A queryset containing tasks due today for the user.
 
     """
     # Query tasks due today to be completed
     now = timezone.now()
-    twenty_four_hours = now + timedelta(hours=24)
+    twenty_four_hours = now + timedelta(hours=24, minutes=2)
     due_today = TaskTracker.objects.filter(
         habit__user_id=user_id,
         due_date__range=(now, twenty_four_hours),
@@ -90,11 +155,15 @@ def active_tasks(user_id):
     """
     Retrieve available tasks for a given user.
 
-    Args:
-        user_id (int): The ID of the user for whom tasks are to be retrieved.
+    Parameters
+    ----------
+    user_id : int
+        The ID of the user for whom tasks are to be retrieved.
 
-    Returns:
-        QuerySet: A queryset containing available tasks for the user.
+    Returns
+    -------
+    QuerySet
+        A queryset containing available tasks for the user.
 
     """
     now = timezone.now()
@@ -107,14 +176,20 @@ def active_tasks(user_id):
     )
     return tasks
 
+def upcoming_tasks(user_id):
+    tasks = TaskTracker.objects.filter(habit__user_id=user_id, task_status='Upcoming', task_number=1)
+    return tasks
+
 
 
 def calculate_progress(habits):
     """
     Calculate progress percentage for each active habit.
 
-    Args:
-        habits (QuerySet): A queryset containing active habits.
+    Parameters
+    ----------
+    habits : QuerySet
+        A queryset containing active habits.
 
     """
     # Calculate progress percentage for each active habit
@@ -125,16 +200,24 @@ def calculate_progress(habits):
         else:
             habit.progress_percentage = 0.0
 
+def num_inprogress_tasks(habit):
+    in_progress_num = TaskTracker.objects.filter(habit=habit, task_status='In progress').count()
+    habit.in_progress = in_progress_num
 
 def extract_first_failed_task(updated_task_ids):
     """
-    Extracts the first failed task for each habit based on updated task IDs.
+    Extract the first failed task for each habit based on updated task IDs.
 
-    Args:
-        updated_task_ids (list): List of updated task IDs.
+    Parameters
+    ----------
+    updated_task_ids : list
+        List of updated task IDs.
 
-    Returns:
-        list: List of first failed tasks for each habit.
+    Returns
+    -------
+    list
+        List of first failed tasks for each habit.
+
     """
     # Annotate the minimum task number for each habit
     min_task_numbers = TaskTracker.objects.filter(
@@ -150,14 +233,121 @@ def extract_first_failed_task(updated_task_ids):
     return first_failed_tasks
 
 
+def calculate_score(completed_tasks, failed_tasks, longest_streak, num_of_tasks, duration, weights):
+    """
+    Calculate the score for a habit based on various factors and weights.
+
+    Parameters
+    ----------
+    completed_tasks : int
+        The number of completed tasks for the habit.
+    failed_tasks : int
+        The number of failed tasks for the habit.
+    longest_streak : int
+        The longest streak for the habit.
+    num_of_tasks : int
+        The total number of tasks for the habit.
+    duration : int
+        The duration of the habit in days.
+    weights : dict
+        A dictionary containing weights for different factors.
+
+    Returns
+    -------
+    float
+        The calculated score for the habit.
+
+    """
+    score = (weights['completed_tasks'] * completed_tasks +
+             weights['failed_tasks'] * failed_tasks + 
+             weights['longest_streak'] * longest_streak
+             ) / (num_of_tasks * duration)
+    return score
+
+
+def normalize_scores(scores):
+    """
+    Normalize the scores to ensure they are on the same scale.
+
+    Parameters
+    ----------
+    scores : list
+        A list of scores to be normalized.
+
+    Returns
+    -------
+    list
+        A list of normalized scores.
+
+    """
+    mu = np.mean(scores)
+    sigma = np.std(scores)
+    z_scores = [(x - mu) / sigma for x in scores]
+    return z_scores
+
+
+def rank_habits(weights, period):
+    """
+    Rank habits based on their scores.
+
+    Parameters
+    ----------
+    weights : dict
+        A dictionary containing weights for different factors.
+    period : str
+        The period for which habits should be ranked.
+
+    Returns
+    -------
+    list
+        A list of tuples containing habit objects and their corresponding normalized scores, ranked in descending order.
+
+    """
+    scores = []
+    now = timezone.now()
+    last_month = now - timedelta(days=30)
+
+    prefetch_streaks = Prefetch('streak', queryset=Streak.objects.all())
+
+    habits = Habit.objects.prefetch_related(prefetch_streaks).filter(period=period, creation_time__range=(last_month, now))
+
+    for habit in habits:
+        streak = habit.streak.first()
+        num_of_tasks = habit.num_of_tasks
+        completed_tasks = streak.num_of_completed_tasks
+        failed_tasks = streak.num_of_failed_tasks 
+        longest_streak = streak.longest_streak
+        # subtract one day from creation time to avoid ZeroDivisionError
+        duration = (now - (habit.creation_time - timedelta(days=1))).days
+ 
+        score = calculate_score(completed_tasks, failed_tasks, longest_streak, num_of_tasks, duration, weights)
+
+        scores.append(score)
+
+    normalized_scores = normalize_scores(scores)
+    ranked_habits = sorted(zip(habits, normalized_scores), key=lambda x: x[1], reverse=True)
+
+    return ranked_habits
+
+
 def update_user_activity(user_id):
+    """
+    Update task statuses and achievements for a specific user.
+
+    Updates the status of tasks and achievements based on due dates for the specified user.
+
+    Parameters
+    ----------
+    user_id : int
+        The ID of the user for whom tasks and achievements should be updated.
+
+    """
     # Update task status, and achievements
-    updated_habit_tasks_ids = TaskTracker.update_task_statuses(user_id=user_id)
+    TaskTracker.update_upcoming_tasks()
+    Habit.update_upcoming_habits()
+    updated_habit_tasks_ids = TaskTracker.update_failed_tasks(user_id=user_id)
     updated_habit_ids, updated_task_ids = updated_habit_tasks_ids
 
-    # Escape and quote task IDs for safe use
-    # Define the SQL query with a placeholder for the parameter.
-    # Using a window function to calculate the rank based on the task number.
     # This allows us to rank tasks within each habit, which is necessary to identify
     # The first failed task for each habit is used later to correctly identify
     # when the user breaks a Habit streak.
@@ -166,4 +356,3 @@ def update_user_activity(user_id):
     # Update achievements if failed task
     Achievement.update_achievements(first_failed_tasks)
     Streak.update_streak(updated_habit_ids)
-

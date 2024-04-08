@@ -2,10 +2,10 @@
 {% load mathfilters %}
 {% block content %}
     {% if habit %}
-        <div class="container mt-3">
+        <div class="container mt-2">
             <div class="row">
                 <div class="col-md-6">
-                    <div class="card streak-card mb-4">
+                    <div class="card streak-card mb-2">
                         <h2 class="card-header">Habit Infos</h2>
                         
                         <div class="card-body">
@@ -19,12 +19,12 @@
                                     <p><i class="bi bi-check2"></i> <strong>Total:</strong> {{ habit.num_of_tasks }}</p>
                                 </div>
                                 <div class="col">
-                                    <p><i class="bi bi-check2"></i> <strong>In progress:</strong> {{ habit.num_of_tasks|sub:habit.num_of_completed_tasks|sub:streak.num_of_failed_tasks}}</p>
+                                    <p><i class="bi bi-check2"></i> <strong>In progress:</strong> {{ habit.in_progress }}</p>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <p><i class="bi bi-check2"></i> <strong>Completed:</strong> {{ habit.num_of_completed_tasks }} </p>
+                                    <p><i class="bi bi-check2"></i> <strong>Success:</strong> {{ habit.num_of_completed_tasks }} </p>
                                 </div>
                                 <div class="col">
                                     <p><i class="bi bi-check2"></i> <strong>Failed:</strong> {{ streak.num_of_failed_tasks }}</p>
@@ -44,12 +44,12 @@
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <button class="btn btn-primary mt-3 ml-3" onclick="showTasks('task')">Task log</button>
-                    <button class="btn btn-primary mt-3 ml-3" onclick="showTasks('streak')">Streak log</button>
-                    <div class="container mt-3" id="task-log">
+                    <button id="task-log-button" class="switcher-button" onclick="showTasks('task')">Task log</button>
+                    <button id="streak-log-button" class="switcher-button" onclick="showTasks('streak')">Streak log</button>
+                    <div class="container mt-5 table-container" id="task-log">
                         <div class="row">
                             <div class="col-md-12">
-                                <table class="table">
+                                <table class="table">                               
                                     <thead>
                                         <tr>
                                             <th>N</th>
@@ -72,8 +72,7 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="container mt-5" id="streak-log">
+                    <div class="container mt-5 table-container" id="streak-log">
                         <div class="row">
                             <div class="col-md-12">
                                 <table class="table">
@@ -111,9 +110,9 @@
                 document.getElementById('task-log').style.display = 'none';
                 document.getElementById('streak-log').style.display = 'none';
 
-    
+
                 // Remove 'active' class from all buttons
-                var buttons = document.querySelectorAll('.btn');
+                var buttons = document.querySelectorAll('.switcher-button');
                 buttons.forEach(function(button) {
                     button.classList.remove('active');
                 });
@@ -122,7 +121,8 @@
                 document.getElementById(`${kind}-log`).style.display = 'block';
     
                 // Add 'active' class to the clicked button
-                document.querySelector(`button[data-kind="${kind}"]`).classList.add('active');
+                document.getElementById(`${kind}-log-button`).classList.add('active');
+;
             }
         </script>
     {% else %}

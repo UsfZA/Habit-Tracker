@@ -39,8 +39,10 @@ class Habit(models.Model):
     goal = models.IntegerField(default=90)
     num_of_tasks = models.IntegerField()
     num_of_completed_tasks = models.IntegerField(default = 0)
+    status = models.CharField(max_length=255, default='In progress')
     notes = models.CharField(max_length=255, default=None)
     creation_time = models.DateTimeField(auto_now_add=True)
+    start_date = models.DateTimeField(null=True, blank=True)
     completion_date = models.DateTimeField(null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
@@ -60,11 +62,14 @@ class Habit(models.Model):
             Additional keyword arguments.
         """
 
+        if self.start_date >= timezone.now():
+            self.status = 'Upcoming'
+        
         self.name = self.name.lower()
 
         # Calculate the completion date based on the goal
         if not self.completion_date:
-            self.completion_date = timezone.now() + timedelta(hours=self.goal*24)
+            self.completion_date = self.start_date + timedelta(hours=self.goal*24)
 
         # Calculate the number of tasks needed to achieve the habit goal
         num_of_period = convert_period_to_days(self.period)
@@ -73,6 +78,13 @@ class Habit(models.Model):
 
 
         super().save(*args, **kwargs)
+
+    @classmethod
+    def update_upcoming_habits(cls):
+        new_active_habits = Habit.objects.filter(start_date__lte=timezone.now(), status='Upcoming')
+        for habit in new_active_habits:
+            habit.status = 'In progress'
+            habit.save()
 
 
 class TaskTracker(models.Model):
@@ -125,8 +137,8 @@ class TaskTracker(models.Model):
         time_skip = timedelta(hours=time_jump*24)
 
         # Initialize start and due dates for tasks
-        due_date = start_date = habit.creation_time
-        default='In progress'
+        due_date = start_date = habit.start_date
+        default= habit.status
 
         # Increment the due_date and start_date by time_skip,
         # skip the first iteration for start_date
@@ -139,9 +151,24 @@ class TaskTracker(models.Model):
             cls.objects.create(habit=habit, due_date=due_date, task_number=i,
                                task_status=default, start_date=current_start_date)
 
+    @classmethod
+    def update_upcoming_tasks(cls):
+        # Get habits with start dates that are less than or equal to the current time
+        habits_to_update = Habit.objects.filter(start_date__lte=timezone.now(), status='Upcoming')
+
+        # Iterate over each habit to update its associated tasks
+        for habit in habits_to_update:
+            # Get tasks associated with the current habit
+            tasks_to_update = cls.objects.filter(habit=habit)
+
+            # Update the status of each task to 'In progress'
+            for task in tasks_to_update:
+                task.task_status = 'In progress'
+                task.save()
+
 
     @classmethod
-    def update_task_statuses(cls, user_id):
+    def update_failed_tasks(cls, user_id):
         """
         Updates task statuses based on due dates for a specific user.
 
@@ -216,20 +243,6 @@ class Streak(models.Model):
             self.longest_streak = self.current_streak
         super().save(*args, **kwargs)
 
-    @classmethod
-    def initiate_streak(cls, habit):
-        """
-        Creates a new streak instance for the specified habit.
-
-        This class method creates a new Streak instance associated with the provided
-        Habit object, initializing the streak counters.
-
-        Parameters
-        ----------
-        habit : Habit
-            The Habit object for which to initiate the streak.
-        """
-        cls.objects.create(habit=habit)
 
     @classmethod
     def update_streak(cls, habit_ids):
@@ -268,7 +281,7 @@ class Achievement(models.Model):
     date : DateTime
         The date of the achievement.
     """
-    habit = models.ForeignKey(Habit, on_delete=models.CASCADE)
+    habit = models.ForeignKey(Habit, on_delete=models.CASCADE, related_name='achievement')
     streak_length = models.IntegerField(default=0)
     title = models.CharField(max_length=255)
     date = models.DateTimeField(null=True, blank=True)

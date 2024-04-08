@@ -1,11 +1,11 @@
 body {
     background: #f6f2f5;
     color: #333333;
-    margin: 0 auto; /* Add margin to center the content horizontally */
-    max-width: 2000px; /* Optionally, set a maximum width for the content */
-    padding: 0 20px; /* Optionally, add padding to the sides */
+    margin: 0 auto; 
+    max-width: 2000px;
+    padding: 0 20px; 
     margin-top: 5rem;
-    padding-left: 200px; /* Add padding to the left side */
+    padding-left: 200px;
 
 }
 
@@ -54,245 +54,276 @@ ul {
     font-size: 2.5rem;
 }
 
-/* Make the frequency label smaller */
 .small-label {
-    font-size: 0.8rem; /* Adjust the size as needed */
+    font-size: 0.8rem; 
 }
 
-/* Adjust the form layout */
 .form-group {
-    margin-bottom: 1rem; /* Add spacing between form groups */
+    margin-bottom: 1rem; 
 }
 
-/* Optionally, you can adjust the width of the form fields */
 .col-sm-2 input,
 .col-sm-4 input {
-    width: 100%; /* Make the input fields take up the full width of their container */
+    width: 100%; 
 }
 
-/* main.css */
 
 .custom-margin {
-  margin-right: 20px; /* Adjust the value as needed */
+  margin-right: 20px; 
 }
+
 .streak-card {
-    background-color: #f0f0f0; /* Light gray background color */
-    border-radius: 10px; /* Rounded corners */
-    padding: 20px; /* Padding around the card */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Box shadow for a subtle elevation effect */
+    background-color: #f0f0f0; 
+    border-radius: 20px;
+    padding: 20px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
     display: flex;
     flex-direction: column;
-    align-items: center; /* Center content horizontally */
-    justify-content: center; /* Center content vertically */
+    align-items: center; 
+    justify-content: center;
 }
 
 .home-streak-card {
-    background-color: #f0f0f0; /* Light gray background color */
-    border-radius: 10px; /* Rounded corners */
-    padding: 20px; /* Padding around the card */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Box shadow for a subtle elevation effect */
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
-    align-items: start; /* Center content horizontally */
-    justify-content: start; /* Center content vertically */
+    align-items: start;
+    justify-content: start;
     margin-bottom: 2px
 }
 
 .add-habit-card {
-    background-color: #f0f0f0; /* Light gray background color */
-    border-radius: 10px; /* Rounded corners */
-    padding: 20px; /* Padding around the card */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Box shadow for a subtle elevation effect */
+    background-color: #f0f0f0;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
 }
 
 .streak-label {
     font-weight: bold;
-    font-size: 18px; /* Font size for the label */
-    color: #333; /* Dark gray text color */
+    font-size: 18px;
+    color: #333;
 }
 .streak-label {
     font-weight: bold;
-    font-size: 16px; /* Font size for the label */
-    color: #333; /* Dark gray text color */
+    font-size: 16px;
+    color: #333;
 }
 
 .streak-value {
-    font-size: 36px; /* Large font size for the streak value */
-    color: #007bff; /* Blue color for the streak value */
-    margin-top: 10px; /* Spacing between label and value */
+    font-size: 36px;
+    color: #007bff;
+    margin-top: 10px;
 }
 
 .streak-info {
-    text-align: center; /* Center text */
-    margin-bottom: 15px; /* Add some spacing between streak info */
+    text-align: center;
+    margin-bottom: 15px;
 }
 
 .card-title {
-    font-size: 24px; /* Font size for the card title */
-    font-weight: bold; /* Bold font weight */
+    font-size: 24px;
+    font-weight: bold;
     text-align: center;
-    text-transform: capitalize; /* Capitalize the text */
-    margin-bottom: 15px; /* Add some spacing below the title */
-    font-family: 'Arial', sans-serif; /* Specify the font family */
+    text-transform: capitalize;
+    margin-bottom: 15px;
+    font-family: 'Arial', sans-serif;
 }
 .home-card-title {
-    font-size: 24px; /* Font size for the card title */
-    font-weight: bold; /* Bold font weight */
+    font-size: 24px;
+    font-weight: bold;
     text-align: start;
-    text-transform: capitalize; /* Capitalize the text */
-    margin-bottom: 5px; /* Add some spacing below the title */
-    font-family: 'Arial', sans-serif; /* Specify the font family */
-    justify-content: start; /* Center content vertically */
+    text-transform: capitalize;
+    margin-bottom: 5px;
+    font-family: 'Arial', sans-serif;
+    justify-content: start;
 
 }
 
 .container {
-    width: 95%; /* Set the width to 90% of the viewport width */
-    max-width: 2000px; /* Set a maximum width to prevent the content from becoming too wide */
-    margin: center; /* Center the container horizontally */
+    width: 95%;
+    max-width: 2000px;
+    margin: center;
 }
 
-/* Add padding to the left side of the navbar */
+
 .navbar {
     padding-left: 100px;
 }
 
-/* Style the table */
+/* table */
 .table {
-    width: 100%; /* Make the table fill its container */
-    border-radius: 10px; /* Rounded corners */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Box shadow for a subtle elevation effect */
-    background-color: #f0f0f0; /* Light gray background color */
-    padding: 10px; /* Padding around the table */
-    margin-top: 0px; /* Add margin on top to separate from the card */
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #f0f0f0;
+    padding: 10px;
+    margin-top: 0px;
 }
 
 
 .table td {
-    padding: 8px; /* Add padding inside table cells */
-    border: oklch(lightness chroma hue); /* Remove borders between cells */
-    text-align: left; /* Align text to the left within cells */
+    padding: 8px;
+    border: oklch(lightness chroma hue);
+    text-align: left;
 }
 
 .table th {
-    background-color: #dcdcdc; /* Set background color for table headers */
-    border: oklch(lightness chroma hue); /* Remove borders between cells */
+    border-radius: 5px;
+    background-color: #dcdcdc;
 
 }
 
+.table-container {
+    margin-top: -10px;
+}
 
+/* buttons */
 .btn {
-    border-radius: 8px; /* Round the corners */
-    padding: 8px 16px; /* Add padding */
-    font-size: 16px; /* Increase font size */
-    font-weight: bold; /* Make the font bold */
-    transition: all 0.3s ease; /* Smooth transition */
+    border-radius: 15px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.3s ease;
 }
 
 .btn-primary {
-    background-color: #4CAF50; /* Change background color for primary button */
-    border-color: #4CAF50; /* Change border color for primary button */
-    color: white; /* Change text color for primary button */
+    background-color: #3498db;
+    border-color: #3498db;
+    color: #ffffff;
 }
 
 .btn-primary:hover {
-    background-color: #45a049; /* Darken background color on hover for primary button */
-    border-color: #45a049; /* Darken border color on hover for primary button */
+    background-color: #2980b9;
+    border-color: #2980b9;
 }
 
 .btn-danger {
-    background-color: #f44336; /* Change background color for danger button */
-    border-color: #f44336; /* Change border color for danger button */
-    color: white; /* Change text color for danger button */
+    background-color: #e74c3c;
+    border-color: #e74c3c;
+    color: #ffffff;
 }
 
 .btn-danger:hover {
-    background-color: #d32f2f; /* Darken background color on hover for danger button */
-    border-color: #d32f2f; /* Darken border color on hover for danger button */
+    background-color: #c0392b;
+    border-color: #c0392b;
 }
 
 .btn-success {
-    background-color: #2196F3; /* Change background color for success button */
-    border-color: #2196F3; /* Change border color for success button */
-    color: white; /* Change text color for success button */
+    background-color: #2ecc71;
+    border-color: #2ecc71;
+    color: #ffffff;
 }
 
 .btn-success:hover {
-    background-color: #1e87cd; /* Darken background color on hover for success button */
-    border-color: #1e87cd; /* Darken border color on hover for success button */
+    background-color: #27ae60;
+    border-color: #27ae60;
 }
 
 .btn-info {
-    background-color: #009688; /* Change background color for info button */
-    border-color: #009688; /* Change border color for info button */
-    color: white; /* Change text color for info button */
+    background-color: #3498db;
+    border-color: #3498db;
+    color: #ffffff;
 }
 
 .btn-info:hover {
-    background-color: #00897b; /* Darken background color on hover for info button */
-    border-color: #00897b; /* Darken border color on hover for info button */
+    background-color: #2980b9;
+    border-color: #2980b9;
 }
 
 .btn-warning {
-    background-color: #ff9800; /* Change background color for warning button */
-    border-color: #ff9800; /* Change border color for warning button */
-    color: black; /* Change text color for warning button */
+    background-color: #f39c12;
+    border-color: #f39c12;
+    color: #212529;
 }
 
 .btn-warning:hover {
-    background-color: #f57c00; /* Darken background color on hover for warning button */
-    border-color: #f57c00; /* Darken border color on hover for warning button */
+    background-color: #d35400;
+    border-color: #d35400;
+}
+
+.switcher-button {
+    border-radius: 15px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.switcher-button.active {
+    background-color: #53b6f9;
+    border-color: #3498db;
+    color: #ffffff;
+}
+
+.switcher-button:not(.active) {
+    background-color: #c5f0fb;
+    border-color: #bdc3c7;
+    color: #34495e;
+}
+
+.switcher-button:hover:not(.active) {
+    background-color: #d5dbdb;
+    border-color: #95a5a6;
+}
+
+.input-group .start-date-field {
+    width: 80%;
+    padding: 0.5rem 1rem;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    background-color: #ffffff;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
 
 
-/* Add this CSS to your main.css file or create a new CSS file and link it in your HTML */
-
 /* Dropdown menu */
 .form-select {
-    width: 60%; /* Make the dropdown menu full width */
-    padding: 0.5rem 1rem; /* Add padding */
-    font-size: 16px; /* Increase font size */
-    border-radius: 8px; /* Round the corners */
-    border: 1px solid #ced4da; /* Add border */
-    background-color: #ffffff; /* Set background color */
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; /* Smooth transition */
-    text-transform: capitalize; /* Capitalize the text */
+    width: 80%;
+    padding: 0.5rem 1rem;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    background-color: #ffffff;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    text-transform: capitalize;
 
 }
 
 /* Style the options within the dropdown */
 .form-select option {
-    padding: 0.5rem 1rem; /* Add padding */
-    font-size: 16px; /* Increase font size */
+    padding: 0.5rem 1rem;
+    font-size: 16px;
 }
 
 
 /* Progress bar */
 .progress {
-    height: 20px; /* Set the height of the progress bar */
-    border-radius: 8px; /* Round the corners */
-    background-color: #d2e9ff; /* Set lighter blue background color */
+    height: 20px;
+    border-radius: 8px;
+    background-color: #d2e9ff;
 }
 
 .progress-bar {
-    border-radius: 8px; /* Round the corners */
-    color: #007bff; /* Set shade of blue color */
+    border-radius: 8px;
+    color: #007bff;
 }
 
 .progress-text {
-    font-size: 16px; /* Set font size */
-    margin-bottom: 0; /* Remove margin bottom */
+    font-size: 16px;
+    margin-bottom: 0;
 }
-
 
 .bg-blue {
-    background-color: #007bff; /* Desired shade of blue */
+    background-color: #007bff;
 }
-
-
 
 
 /* Style error messages */
@@ -331,34 +362,13 @@ input[type="password"] {
 .custom-create-habit-text {
     font-size: 18px;
     font-weight:500;
-    color: #333; /* Change the color as desired */
-    margin-top: 10px; /* Adjust the top margin as needed */
+    color: #333;
+    margin-top: 10px;
 }
 
 
 
-/* CSS to style the buttons */
-.switcher-button {
-    border-radius: 15px; /* Round the corners */
-    padding: 10px 20px; /* Add padding */
-    font-size: 14px; /* Increase font size */
-    font-weight: bold; /* Make the font bold */
-    transition: all 0.3s ease; /* Smooth transition */
-}
-
-.switcher-button.active {
-    background-color: #53b6f9; /* Change background color for active button */
-    border-color: #3498db; /* Change border color for active button */
-    color: #ffffff; /* Change text color for active button */
-}
-
-.switcher-button:not(.active) {
-    background-color: #c5f0fb; /* Change background color for inactive button */
-    border-color: #bdc3c7; /* Change border color for inactive button */
-    color: #34495e; /* Change text color for inactive button */
-}
-
-.switcher-button:hover:not(.active) {
-    background-color: #d5dbdb; /* Darken background color on hover for inactive button */
-    border-color: #95a5a6; /* Darken border color on hover for inactive button */
+#task-log,
+#streak-log {
+    margin-top: -10px; /* Adjust as needed */
 }

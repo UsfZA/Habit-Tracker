@@ -1,20 +1,20 @@
+import json
+from django.http import JsonResponse
+from django.http.response import HttpResponse as HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.utils import timezone
-from django.http import JsonResponse
 from django.core import serializers
-import json
 from django.contrib import messages
 from django.contrib.auth.models import User
-from Users.utils import update_profile
 from .forms import HabitForm
 from .models import TaskTracker, Habit, Streak, Achievement
 from .analytics import (
-    due_today_tasks, active_tasks, 
+    due_today_tasks, active_tasks, upcoming_tasks,
     calculate_progress, longest_current_streak_over_all_habits,
     all_tracked_habits, habits_by_period,
-    longest_streak_over_all_habits, longest_streak_for_habit,
-    update_user_activity
+    longest_streak_over_all_habits, num_inprogress_tasks,
+    update_user_activity, rank_habits
 )
 
 class HabitView(View):
@@ -30,6 +30,12 @@ class HabitView(View):
     about(request)
         Displays the About page.
     """
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')
+        return super().dispatch(request, *args, **kwargs)
+    
+
     def get(self, request, *args, **kwargs):
         """
         Handles GET requests for displaying the home page.
@@ -44,16 +50,17 @@ class HabitView(View):
         HttpResponse
             The HTTP response.
         """
-        if not request.user.is_authenticated:
-            return redirect('login')
         
         user_id = request.user.id
         update_user_activity(user_id)
         today_tasks = due_today_tasks(user_id=user_id)
         active_task = active_tasks(user_id=user_id)
+        upcoming_task = upcoming_tasks(user_id=user_id)
         user_full_name = User.objects.get(id=user_id).get_full_name().split()[0].capitalize()
+        print(upcoming_task)
 
         context = {
+            'upcoming_tasks': upcoming_task,
             'due_today_tasks': today_tasks,
             'available_tasks': active_task,
             'user_full_name': user_full_name
@@ -75,8 +82,6 @@ class HabitView(View):
         HttpResponse
             The HTTP response.
         """
-        if not request.user.is_authenticated:
-            return redirect('login')
 
         task_id = request.POST.get('task_id')
         habit_id = request.POST.get('habit_id')
@@ -101,7 +106,7 @@ class HabitView(View):
                 habit.save()
                 streak.save()
 
-                messages.success(request, 'Task marked as done')
+                messages.success(request, f' {habit.name} Task marked as done')
 
                 return redirect('habit-home')
 
@@ -111,29 +116,9 @@ class HabitView(View):
         # If an error occurs or the task is not found, redirect to habit home page
         return redirect('habit-home')
 
-
-
-    def about(request):
-        """
-        View function to display the About page.
-
-        Parameters
-        ----------
-        request : HttpRequest
-            The HTTP request.
-
-        Returns
-        -------
-        HttpResponse
-            The HTTP response.
-        """
-        if not request.user.is_authenticated:
-            return redirect('login')
-        else:
-            return render(request, 'about.html', {'title': 'About'})
         
 
-class HabitManagerView():
+class HabitManagerView(View):
     """
     View class for managing habits.
 
@@ -148,6 +133,7 @@ class HabitManagerView():
     delete_habit(request, habit_id)
         Handles deleting a habit.
     """
+    
     @staticmethod
     def active_habits(request):
         """
@@ -187,15 +173,13 @@ class HabitManagerView():
 
         # Construct the context dictionary
 
-
-
         context = {
             'active_habits': all_active_habits,
             'daily_habits': daily_habits,
             'weekly_habits': weekly_habits,
             'monthly_habits': monthly_habits,
         }
-        return render(request, 'active_habits.html', context)
+        return render(request, 'habit_manager.html', context)
 
     @staticmethod
     def habit_detail(request, habit_id):
@@ -222,6 +206,7 @@ class HabitManagerView():
         tasks = TaskTracker.objects.filter(habit_id=habit_id)
         streak = Streak.objects.get(habit_id=habit_id)
         achievement = Achievement.objects.filter(habit_id=habit_id)
+        num_inprogress_tasks(habit)
 
         context = {
             'habit': habit,
@@ -279,6 +264,12 @@ class HabitManagerView():
                                 'period': 'daily',
                                 'goal': '1 month',
                                 'notes': 'Daily meditation practice for mental well-being and stress relief.'
+                            },
+                             'Monthly Review': {
+                                'frequency': '1',
+                                'period': 'monthly',
+                                'goal': '1 year',
+                                'notes': 'Reflect on achievements and set goals for the upcoming month.'
                             }
                         }
         if request.method == 'POST':
@@ -295,25 +286,28 @@ class HabitManagerView():
                     messages.error(request, "You already used that name for another habit")
                     return render(request, 'add_habit.html', {'form': form})
 
+                start_date = form.cleaned_data['start_date']
+                # Save the form with the provided start_date
                 habit = form.save(commit=False)
                 habit.user = request.user
+                habit.start_date = start_date
                 habit.save()
 
                 # Create tasks with their due and start dates for the habit
                 # to populate the Task table
                 TaskTracker.create_tasks(habit)
-                # Initiate a streak on Streak table
-                Streak.initiate_streak(habit)
-                # Update user's profile to increment the number of habits
-                update_profile(request.user)
 
                 habit_name = form.cleaned_data.get('name')
                 messages.success(request, f'{habit_name} Habit created')
                 return redirect('habit-home')
         else:
             form = HabitForm()
+        context = {
+            'form': form, 
+            'pre_defined_habits': pre_defined_habits
+        }
 
-        return render(request, 'add_habit.html', {'form': form, 'pre_defined_habits': pre_defined_habits})
+        return render(request, 'add_habit.html', context)
 
     @staticmethod
     def delete_habit(request, habit_id):
@@ -349,6 +343,8 @@ class HabitManagerView():
         
 
 
+    
+        
 class HabitAnalysis(View):
     """
     View class for managing habits.
@@ -362,7 +358,11 @@ class HabitAnalysis(View):
     post(request, *args, **kwargs)
         Handles POST requests for habit analysis.
     """
-
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')
+        return super().dispatch(request, *args, **kwargs)
+    
     def get(self, request, *args, **kwargs):
         """
         Handles GET requests for habit analysis.
@@ -383,8 +383,9 @@ class HabitAnalysis(View):
         HttpResponse
             Rendered analysis template with habit data.
         """
-        if not request.user.is_authenticated:
-            return redirect('login')
+        # if not request.user.is_authenticated:
+        #     return redirect('login')
+
         user_id = request.user.id
 
         # Retrieve all tracked habits and filter them by period
@@ -398,6 +399,15 @@ class HabitAnalysis(View):
         # Retrieve the habit with longest streak 
         longest_all_streak = longest_streak_over_all_habits()
 
+        weights = {
+            'completed_tasks': -0.2,
+            'failed_tasks': 0.8,
+            'longest_streak': -0.2,
+        }
+
+        daily_struggled_most = rank_habits(weights, 'daily')[0][0]
+        weekly_struggled_most = rank_habits(weights, 'weekly')[0][0]
+
         calculate_progress(all_habits)
         calculate_progress(daily_habits)
         calculate_progress(weekly_habits)
@@ -410,6 +420,8 @@ class HabitAnalysis(View):
             'daily_habits': daily_habits,
             'weekly_habits': weekly_habits,
             'monthly_habits': monthly_habits,
+            'daily_struggled_most' : daily_struggled_most,
+            'weekly_struggled_most' : weekly_struggled_most,
             'longest_all_streak': longest_all_streak,
             'longest_current_all_streak': longest_current_all_streak
         }

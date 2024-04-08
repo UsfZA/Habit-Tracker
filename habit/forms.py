@@ -14,17 +14,23 @@ Classes:
 
 from django import forms
 from django.core.validators import MinValueValidator
+from django.utils import timezone
 from .models import Habit
 from .utils import convert_goal_to_days
+
+from django import forms
+from .models import Habit
 
 class HabitForm(forms.ModelForm):
     """
     Form for creating or updating a Habit.
 
     Attributes:
+    ----------
         PERIOD_CHOICES (list): Choices for the habit period.
         GOAL_CHOICES (list): Choices for the habit goal duration.
     """
+
     PERIOD_CHOICES = [
         ('daily', 'Daily'),
         ('weekly', 'Weekly'),
@@ -46,12 +52,19 @@ class HabitForm(forms.ModelForm):
     frequency = forms.IntegerField(initial=1, required=False, validators=[MinValueValidator(1)])
     notes = forms.CharField(required=False)
     goal = forms.ChoiceField(choices=GOAL_CHOICES, widget=forms.Select, required=True)
+    start_date = forms.DateTimeField(
+        widget=forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'start-date-field'}),
+        required=True
+    )
+
+    
 
     def clean_goal(self):
         """
         Clean and validate the 'goal' field.
 
         Returns:
+        -------
             int: The number of days corresponding to the selected goal.
         """
         selected_goal = self.cleaned_data.get('goal')
@@ -61,10 +74,12 @@ class HabitForm(forms.ModelForm):
         """
         Check if the habit name is unique for the given user.
 
-        Args:
+        Parameters:
+        ----------
             user (User): The user for whom the habit name uniqueness is checked.
 
         Returns:
+        -------
             bool: True if the habit name is unique; False otherwise.
         """
         habit_name = self.cleaned_data['name']
@@ -79,11 +94,11 @@ class HabitForm(forms.ModelForm):
         Check if the specified goal for the habit is achievable based on frequency and period.
 
         Returns:
+        -------
             bool: True if the goal is achievable; False otherwise.
         """
         goal = self.cleaned_data.get('goal')
         period = self.cleaned_data.get('period')
-        frequency = self.cleaned_data.get('frequency')
 
         num = 1  # Initialize 'num' with a default value
         if period == 'daily':
@@ -102,4 +117,5 @@ class HabitForm(forms.ModelForm):
         Meta class for defining the model and fields for the HabitForm.
         """
         model = Habit
-        fields = ['name', 'frequency', 'period', 'goal', 'notes']
+        fields = ['name', 'frequency', 'period', 'goal', 'notes', 'start_date']
+

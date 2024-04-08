@@ -7,11 +7,11 @@
     <div class="container mt-3">
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <div class="card">
+                <div class="card add-habit-card">
                     <h1 class="card-header text-center">User Profile</h1>
                     <div class="card-body">
                         <div class="text-center">
-                            <img src="{% if profile.user.profile.picture %}{{ profile.user.profile.picture.url }}{% else %}{% static 'img/avatar-placeholder.jpg' %}{% endif %}" alt="Profile Picture" class="img-fluid rounded-circle mb-3">
+                            <img src="{{ user.profile.image.url }}" alt="Profile Picture" class="img-fluid rounded-circle mb-3">
                         </div>
                         <p><i class="bi bi-person"></i> <strong>Full Name:</strong> {{ profile.user.first_name }} {{ profile.user.last_name }}</p>
                         {% if profile.email %}
@@ -19,20 +19,13 @@
                         {% endif %}
                         <p><i class="bi bi-calendar"></i> <strong>Joined:</strong> {{ profile.user.date_joined | date:"D, d M Y H:i:s" }}</p>
 
-                        <h3 class="mt-4">Habits</h3>
-                        <p><i class="bi bi-check2"></i> <strong>Active Habits:</strong> {{ profile.active_habit }}</p>
-                        <p><i class="bi bi-check2"></i> <strong>Completed Habits:</strong> {{ profile.completed_habit }}</p>
-
-                        <h3 class="mt-4">Achievements</h3>
-                        <ul>
-                            {% for achievement in profile.achievements %}
-                                <li><i class="bi bi-trophy"></i> {{ achievement }}</li>
-                            {% endfor %}
-                        </ul>
-
                         <!-- Add more details or icons as needed -->
+                        <div class="form-group row">
+                            <div class="col-sm-7 offset-sm-1">
+                                <a class="btn btn-primary btn-block" href="{% url 'habit-home' %}">Back to Habit Dashboard</a>
 
-                        <a class="btn btn-primary btn-block mt-1" href="{% url 'habit-home' %}">Back to Habit Dashboard</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

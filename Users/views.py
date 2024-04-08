@@ -1,20 +1,35 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.contrib.auth import login, authenticate
 from .forms import UserRegisterForm
 from django.contrib.auth.decorators import login_required
 from .models import Profile
-
+from .forms import ProfileUpdateForm
 
 
 def register(request):
+    """
+    View function for user registration.
+
+    This view handles the registration of new users. If the request method is POST,
+    it validates the user registration form, saves the user if the form is valid,
+    and redirects to the login page. If the request method is GET, it renders the
+    user registration form.
+
+    Parameters
+    ----------
+    request : HttpRequest
+        The HTTP request object.
+
+    Returns
+    -------
+    HttpResponse
+        The HTTP response object.
+
+    """
     if request.method == 'POST':   
         form = UserRegisterForm(request.POST)
         if form.is_valid():
-            #user = 
             form.save()
-            #user = authenticate(request, username=user.username, password=request.POST['password1'])
-            #login(request, user)
             username = form.cleaned_data.get('username')
             messages.success(request, f'Account created for {username}')
             return redirect('login')
@@ -26,14 +41,34 @@ def register(request):
 @login_required
 def profile(request):
     """
-    View function to display user profile.
+    View function to display user profile and handle profile picture upload.
 
-    Args:
-        request (HttpRequest): The HTTP request.
+    If the request method is POST, it validates the profile update form, saves the
+    profile if the form is valid, and redirects to the profile page with a success message.
+    If the request method is GET, it renders the profile update form with the current
+    user profile instance.
 
-    Returns:
-        HttpResponse: The HTTP response.
+    Parameters
+    ----------
+    request : HttpRequest
+        The HTTP request object.
+
+    Returns
+    -------
+    HttpResponse
+        The HTTP response object.
+
     """
-    profile_instance, create = Profile.objects.get_or_create(user=request.user)
- 
-    return render(request, 'Users/profile.html', {'profile': profile_instance})
+    if request.method == 'GET':
+        profile_instance, create = Profile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
+        if profile_form.is_valid():
+            profile_form.save()
+            messages.success(request, 'Your profile picture has been updated!')
+            return redirect('profile')
+    else:
+        profile_form = ProfileUpdateForm(instance=request.user.profile)
+
+    return render(request, 'Users/profile.html', {'profile': profile_instance, 'profile_form': profile_form})
