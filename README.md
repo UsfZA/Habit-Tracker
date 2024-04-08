@@ -18,10 +18,12 @@ cd Habit-Tracker
 pip install -r requirements.txt
 ```
   ### Database configuration ###
-I'm using Mysql as database so i included mysqlclient in requirements
-
-3. copy the '**local_settings.example.py**' and rename it to local_settings.py.
-4. Update the database configuration in '**local_settings.py**' with your own database credentials.
+I'm using MySQL as the database, so I've included `mysqlclient` in the requirements.
+If you don't have MySQL installed, you can use the built-in SQLite configuration. Follow these steps:
+ 
+  1. Ensure you have SQLite installed on your system.
+  2. Copy the '**local_settings.example.py**' file and rename it to `local_settings.py`.
+  3. Update the database configuration in '**local_settings.py**' with your own database credentials.
 
 
 5. Apply database migrations:
