@@ -4,7 +4,7 @@
 *.pyc
 __pycache__
 db.sqlite3
-media
+profile_pics
 
 # Backup files # 
 *.bak 

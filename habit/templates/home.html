@@ -85,6 +85,7 @@
                         </label>
                         <p class="mt-2">Start: {{ task.start_date|date:"F d, Y" }} at {{ task.due_date|date:"g:i A" }}</p>
                         <p class="mt-2">Due: {{ task.due_date|date:"F d, Y" }} at {{ task.due_date|date:"g:i A" }}</p>
+                        <p><i class="bi bi-person mt-2"></i> <strong>Notes:</strong> {{ task.habit.notes }}</p>
                     </div>
                 </div>
             </div> 

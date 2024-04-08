@@ -69,7 +69,7 @@ class Habit(models.Model):
 
         # Calculate the completion date based on the goal
         if not self.completion_date:
-            self.completion_date = self.start_date + timedelta(hours=self.goal*24)
+            self.completion_date = self.start_date + timedelta(days=self.goal)
 
         # Calculate the number of tasks needed to achieve the habit goal
         num_of_period = convert_period_to_days(self.period)
