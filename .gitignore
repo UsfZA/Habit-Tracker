@@ -135,7 +135,6 @@ local_settings.py
 
 #test
 pytest.ini
-tests
 
 #Docker
 Dockerfile

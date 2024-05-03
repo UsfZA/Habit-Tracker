@@ -33,8 +33,8 @@ urlpatterns = [
 
     path('', habit_views.HabitView.as_view(), name='habit-home'),
 
-    path('Add-Habit/', habit_views.HabitManagerView.add_habit, name='habit-creation'),
-    path('delete-habit/<int:habit_id>/', habit_views.HabitManagerView.delete_habit, name='habit-deletion'),
+    path('Add-Habit/', habit_views.HabitManagerView.add_habit, name='habit_creation'),
+    path('delete-habit/<int:habit_id>/', habit_views.HabitManagerView.delete_habit, name='habit_deletion'),
     path('Habit-Manager/', habit_views.HabitManagerView.active_habits, name = 'active_habits'),
     path('Habit-Infos/<int:habit_id>/', habit_views.HabitManagerView.habit_detail, name='habit_detail'),
 

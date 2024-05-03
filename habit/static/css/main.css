@@ -368,7 +368,49 @@ input[type="password"] {
 
 
 
-#task-log,
-#streak-log {
-    margin-top: -10px; /* Adjust as needed */
+
+
+
+
+
+.completed-label {
+    text-align: center;
+    font-weight: bold;
+    font-size: 16px;
+    color: #333;
+}
+
+.completed-value {
+    text-align: center;
+    font-size: 24px;
+    color: #007bff;
+    margin-top: 10px;
+}
+
+.completed-card {
+    background-color: #f0f0f0; 
+    border-radius: 20px;
+    padding: 10px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    justify-content: center;
+}
+
+.completed-info-line {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.vertical-line {
+    border-left: 1px solid #1594de;
+    height: 100%; /* Adjust the height of the vertical line */
+    margin: 0 10px; /* Adjust the spacing between sections */
+}
+
+
+.completed-info-column {
+    flex: 1;
 }

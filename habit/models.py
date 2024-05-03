@@ -38,8 +38,6 @@ class Habit(models.Model):
     period = models.CharField(max_length=255)
     goal = models.IntegerField(default=90)
     num_of_tasks = models.IntegerField()
-    num_of_completed_tasks = models.IntegerField(default = 0)
-    status = models.CharField(max_length=255, default='In progress')
     notes = models.CharField(max_length=255, default=None)
     creation_time = models.DateTimeField(auto_now_add=True)
     start_date = models.DateTimeField(null=True, blank=True)
@@ -61,10 +59,7 @@ class Habit(models.Model):
         **kwargs
             Additional keyword arguments.
         """
-
-        if self.start_date >= timezone.now():
-            self.status = 'Upcoming'
-        
+ 
         self.name = self.name.lower()
 
         # Calculate the completion date based on the goal
@@ -79,12 +74,6 @@ class Habit(models.Model):
 
         super().save(*args, **kwargs)
 
-    @classmethod
-    def update_upcoming_habits(cls):
-        new_active_habits = Habit.objects.filter(start_date__lte=timezone.now(), status='Upcoming')
-        for habit in new_active_habits:
-            habit.status = 'In progress'
-            habit.save()
 
 
 class TaskTracker(models.Model):
@@ -138,7 +127,7 @@ class TaskTracker(models.Model):
 
         # Initialize start and due dates for tasks
         due_date = start_date = habit.start_date
-        default= habit.status
+        default= 'In progress'
 
         # Increment the due_date and start_date by time_skip,
         # skip the first iteration for start_date
@@ -151,20 +140,6 @@ class TaskTracker(models.Model):
             cls.objects.create(habit=habit, due_date=due_date, task_number=i,
                                task_status=default, start_date=current_start_date)
 
-    @classmethod
-    def update_upcoming_tasks(cls):
-        # Get habits with start dates that are less than or equal to the current time
-        habits_to_update = Habit.objects.filter(start_date__lte=timezone.now(), status='Upcoming')
-
-        # Iterate over each habit to update its associated tasks
-        for habit in habits_to_update:
-            # Get tasks associated with the current habit
-            tasks_to_update = cls.objects.filter(habit=habit)
-
-            # Update the status of each task to 'In progress'
-            for task in tasks_to_update:
-                task.task_status = 'In progress'
-                task.save()
 
 
     @classmethod
@@ -242,6 +217,14 @@ class Streak(models.Model):
         if self.current_streak > self.longest_streak:
             self.longest_streak = self.current_streak
         super().save(*args, **kwargs)
+    
+    @classmethod
+    def num_completed_tasks(cls, habit):
+        completed_num = TaskTracker.objects.filter(habit=habit, task_status='Completed').count()
+        streak = habit.streak.first()
+        streak.num_of_completed_tasks = completed_num
+        streak.save()
+
 
 
     @classmethod
@@ -258,6 +241,7 @@ class Streak(models.Model):
         habit_ids : list
             A list of habit IDs to update streak information for.
         """
+
         for habit_id in habit_ids:
             habit_streak = cls.objects.get(habit_id=habit_id)
             habit_streak.num_of_failed_tasks += 1
@@ -286,27 +270,6 @@ class Achievement(models.Model):
     title = models.CharField(max_length=255)
     date = models.DateTimeField(null=True, blank=True)
 
-
-    @classmethod
-    def get_habit_streak(cls, habit):
-        """
-        Fetch the streak information associated with the given habit.
-
-        Parameters
-        ----------
-        habit : Habit
-            The habit for which to fetch the streak information.
-
-        Returns
-        -------
-        Streak
-            The streak information associated with the habit.
-        """
-        try:
-            streak = habit.streak.get()
-            return streak
-        except Streak.DoesNotExist:
-            return None
     
 
     @classmethod
@@ -325,12 +288,18 @@ class Achievement(models.Model):
             A queryset containing TaskTracker objects representing the tasks associated with habits.
         """
         for task in tasks:
-            streak = cls.get_habit_streak(task.habit)
+            # Check if the task number is greater than 1 to avoid index out of range error
+            if task.task_number > 1:
+                prev_task = TaskTracker.objects.get(task_number=task.task_number - 1)
+                # Check if the previous task was failed to avoid repeating Break habit title
+                if prev_task.task_status == 'Failed':
+                    continue
+            streak = task.habit.streak.get()
             # Check if the streak is not None and its current_streak is not 0
             if streak and streak.current_streak != 0:
                 title = 'Break The Habit'
                 # Assign the streak length from the fetched streak information
-                streak_length = streak.longest_streak if streak else 0
+                streak_length = streak.current_streak if streak else 0
                 cls.objects.create(habit=task.habit, date=task.due_date,
                                     title=title, streak_length=streak_length)
 
@@ -352,16 +321,41 @@ class Achievement(models.Model):
         """
         habit = Habit.objects.get(pk=habit_id)  # Retrieve the Habit instance using the habit_id
 
-        if streak.current_streak == 7 and habit.period == 'daily':
+        if streak.current_streak // habit.frequency == 7 and habit.period == 'daily':
             title = '7-Day Streak'
             cls.objects.create(habit=habit, date=timezone.now(), title=title,
                                streak_length=streak.current_streak)
-        if streak.current_streak == 14 and habit.period == 'daily':
+        if streak.current_streak // habit.frequency == 14 and habit.period == 'daily':
             title = '14-Day Streak'
             cls.objects.create(habit=habit, date=timezone.now(), title=title,
                                streak_length=streak.current_streak)
-        if streak.current_streak == 30 and habit.period == 'daily':
-            title = '30-Day Streak'
-            cls.objects.create(habit=habit, date=timezone.now(), title=title,
-                               streak_length=streak.current_streak)
+        # if streak.current_streak // habit.frequency == 30 and habit.period == 'daily':
+        #     title = '30-Day Streak'
+        #     cls.objects.create(habit=habit, date=timezone.now(), title=title,
+        #                        streak_length=streak.current_streak)
             
+        # if streak.current_streak // habit.frequency == 1  and habit.period == 'weekly':
+        #     title = '1-Week Streak'
+        #     cls.objects.create(habit=habit, date=timezone.now(), title=title,
+        #                        streak_length=streak.current_streak)
+        # if streak.current_streak // habit.frequency == 2 and habit.period == 'weekly':
+        #     title = "2-Week's Streak"
+        #     cls.objects.create(habit=habit, date=timezone.now(), title=title,
+        #                        streak_length=streak.current_streak)
+        # if streak.current_streak // habit.frequency == 4 and habit.period == 'weekly':
+        #     title = "4-Week's Streak"
+        #     cls.objects.create(habit=habit, date=timezone.now(), title=title,
+        #                        streak_length=streak.current_streak)
+            
+        # if streak.current_streak // habit.frequency == 1  and habit.period == 'monthly':
+        #     title = '1-Month Streak'
+        #     cls.objects.create(habit=habit, date=timezone.now(), title=title,
+        #                        streak_length=streak.current_streak)
+        # if streak.current_streak // habit.frequency == 2 and habit.period == 'monthly':
+        #     title = "2-Month's Streak"
+        #     cls.objects.create(habit=habit, date=timezone.now(), title=title,
+        #                        streak_length=streak.current_streak)
+        # if streak.current_streak // habit.frequency == 4 and habit.period == 'monthly':
+        #     title = "4-Month's Streak"
+        #     cls.objects.create(habit=habit, date=timezone.now(), title=title,
+        #                        streak_length=streak.current_streak)

@@ -7,6 +7,7 @@
     <div class="mb-4">
         <select class="form-select" onchange="showHabits(this.value)">
             <option value="all">All tracked habits</option>
+            <option value="completed">Completed habits</option>
             <option value="daily">Daily habits</option>
             <option value="weekly">Weekly habits</option>
             <option value="monthly">Monthly habits</option>
@@ -156,9 +157,40 @@
                     </div>
                 </div>
             </div>
+            <div id="completed-active-habits" style="display: none;">
+                <div class="row">
+                    {% for habit in completed_habits %}
+                        {% with streak=habit.streak.first %}
+                        <div class="col-md-6 mb-4">
+                            <div class="card completed-card">
+                                <div class="card-body d-flex flex-column">
+                                    <h4 class="card-title">{{ habit.name }}</h4>
+                                    <h6 class="card-subtitle text-muted text-center">{{ habit.period.capitalize }} Habit</h6>
+                                    <div class="completed-info-line">
+                                        <div class="completed-info-column">
+                                            <div class="completed-label">Total Tasks</div>
+                                            <div class="completed-value">{{ habit.num_of_tasks }}</div> 
+                                            <div class="completed-label">Completed</div>
+                                            <div class="completed-value">{{ streak.num_of_completed_tasks }}</div> 
+                                        </div>
+                                        <div class="vertical-line"></div>
+                                        <div class="completed-info-column">
+                                            <div class="completed-label">Top Streak</div>
+                                            <div class="completed-value">{{ streak.longest_streak }}</div>
+                                            <div class="completed-label">Failed</div>
+                                            <div class="completed-value">{{ streak.num_of_failed_tasks }}</div> 
+                                        </div>
+                                    </div>
+                                </div>
+                                <a class="btn btn-text btn-block mt-1" href="{% url 'habit_detail' habit_id=habit.id %}">More Details</a>
+                            </div>
+                        </div>
+                        {% endwith %}
+                    {% endfor %}
+                </div>                               
+            </div>
         </div>
     </div>
-
     <div class="container">
         <div class="row">
             <div class="col-md-11">
@@ -253,6 +285,9 @@
             document.getElementById('w-struggled-most-active-habits').style.display = 'none';
             document.getElementById('longest-streak-active-habits').style.display = 'none';
             document.getElementById('longest-current-streak-active-habits').style.display = 'none';
+            document.getElementById('completed-active-habits').style.display = 'none';
+
+
 
             // Show the selected habit section
             document.getElementById(`${period}-active-habits`).style.display = 'block';

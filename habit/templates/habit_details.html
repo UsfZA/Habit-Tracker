@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load mathfilters %}
 {% block content %}
     {% if habit %}
         <div class="container mt-2">
@@ -24,7 +23,7 @@
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <p><i class="bi bi-check2"></i> <strong>Success:</strong> {{ habit.num_of_completed_tasks }} </p>
+                                    <p><i class="bi bi-check2"></i> <strong>Success:</strong> {{ streak.num_of_completed_tasks }} </p>
                                 </div>
                                 <div class="col">
                                     <p><i class="bi bi-check2"></i> <strong>Failed:</strong> {{ streak.num_of_failed_tasks }}</p>

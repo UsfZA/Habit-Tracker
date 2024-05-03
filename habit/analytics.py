@@ -142,7 +142,7 @@ def due_today_tasks(user_id):
     """
     # Query tasks due today to be completed
     now = timezone.now()
-    twenty_four_hours = now + timedelta(hours=24, minutes=2)
+    twenty_four_hours = now + timedelta(hours=25, minutes=2)
     due_today = TaskTracker.objects.filter(
         habit__user_id=user_id,
         due_date__range=(now, twenty_four_hours),
@@ -166,7 +166,7 @@ def active_tasks(user_id):
         A queryset containing available tasks for the user.
 
     """
-    now = timezone.now()
+    now = timezone.now()+timedelta(hours=1)
     # Query tasks that are available to be completed
     tasks = TaskTracker.objects.filter(
         habit__user_id=user_id,
@@ -177,7 +177,7 @@ def active_tasks(user_id):
     return tasks
 
 def upcoming_tasks(user_id):
-    tasks = TaskTracker.objects.filter(habit__user_id=user_id, task_status='Upcoming', task_number=1)
+    tasks = TaskTracker.objects.filter(habit__user_id=user_id, start_date__gte=timezone.now()+timedelta(hours=1), task_number=1)
     return tasks
 
 
@@ -192,11 +192,13 @@ def calculate_progress(habits):
         A queryset containing active habits.
 
     """
+    
     # Calculate progress percentage for each active habit
     for habit in habits:
         if habit.num_of_tasks > 0:
+            streak = habit.streak.first()
             habit.progress_percentage = round(
-                (habit.num_of_completed_tasks / habit.num_of_tasks) * 100, 2)
+                (streak.num_of_completed_tasks / habit.num_of_tasks) * 100, 2)
         else:
             habit.progress_percentage = 0.0
 
@@ -204,33 +206,6 @@ def num_inprogress_tasks(habit):
     in_progress_num = TaskTracker.objects.filter(habit=habit, task_status='In progress').count()
     habit.in_progress = in_progress_num
 
-def extract_first_failed_task(updated_task_ids):
-    """
-    Extract the first failed task for each habit based on updated task IDs.
-
-    Parameters
-    ----------
-    updated_task_ids : list
-        List of updated task IDs.
-
-    Returns
-    -------
-    list
-        List of first failed tasks for each habit.
-
-    """
-    # Annotate the minimum task number for each habit
-    min_task_numbers = TaskTracker.objects.filter(
-        id__in=updated_task_ids
-        ).values('habit_id').annotate(min_task_number=Min('task_number'))
-
-    # Fetch the first failed task for each habit using the annotated minimum task number
-    first_failed_tasks = TaskTracker.objects.filter(
-        id__in=updated_task_ids, 
-        task_number__in=min_task_numbers.values('min_task_number')
-        ).order_by('habit_id')
-
-    return first_failed_tasks
 
 
 def calculate_score(completed_tasks, failed_tasks, longest_streak, num_of_tasks, duration, weights):
@@ -282,7 +257,13 @@ def normalize_scores(scores):
     """
     mu = np.mean(scores)
     sigma = np.std(scores)
-    z_scores = [(x - mu) / sigma for x in scores]
+    z_scores = []
+    for x in scores:
+        if sigma != 0:
+            z_scores.append((x - mu) / sigma)
+        else:
+            z_scores.append(np.nan)  # or handle the case where sigma is zero appropriately
+
     return z_scores
 
 
@@ -308,8 +289,8 @@ def rank_habits(weights, period):
     last_month = now - timedelta(days=30)
 
     prefetch_streaks = Prefetch('streak', queryset=Streak.objects.all())
-
-    habits = Habit.objects.prefetch_related(prefetch_streaks).filter(period=period, creation_time__range=(last_month, now))
+#  creation_time__range=(last_month, now)
+    habits = Habit.objects.prefetch_related(prefetch_streaks).filter(period=period)
 
     for habit in habits:
         streak = habit.streak.first()
@@ -329,12 +310,44 @@ def rank_habits(weights, period):
 
     return ranked_habits
 
+def all_completed_habits(user_id):
+    prefetch_streaks = Prefetch('streak', queryset=Streak.objects.all())
+    # num_of_tasks = F'streak.num_of_completed_tasks' + F'streak.num_of_failed_tasks',
+    return Habit.objects.prefetch_related(prefetch_streaks).filter(user_id=user_id, completion_date__lt=timezone.now())
+
+
+def extract_first_failed_task(updated_task_ids):
+    """
+    Extract the first failed task for each habit based on updated task IDs.
+
+    Parameters
+    ----------
+    updated_task_ids : list
+        List of updated task IDs.
+
+    Returns
+    -------
+    list
+        List of first failed tasks for each habit.
+
+    """
+    # Annotate the minimum task number for each habit
+    min_task_numbers = TaskTracker.objects.filter(
+        id__in=updated_task_ids
+        ).values('habit_id').annotate(min_task_number=Min('task_number'))
+
+    # Fetch the first failed task for each habit using the annotated minimum task number
+    first_failed_tasks = TaskTracker.objects.filter(
+        id__in=updated_task_ids, 
+        task_number__in=min_task_numbers.values('min_task_number')
+        ).order_by('habit_id')
+
+    return first_failed_tasks
+
 
 def update_user_activity(user_id):
     """
-    Update task statuses and achievements for a specific user.
 
-    Updates the status of tasks and achievements based on due dates for the specified user.
 
     Parameters
     ----------
@@ -342,13 +355,13 @@ def update_user_activity(user_id):
         The ID of the user for whom tasks and achievements should be updated.
 
     """
-    # Update task status, and achievements
-    TaskTracker.update_upcoming_tasks()
-    Habit.update_upcoming_habits()
+    # Update tasks and habits statuses from upcoming to in progress
+
+
+    # Update tasks statuses from in progress to failed and get their ids
     updated_habit_tasks_ids = TaskTracker.update_failed_tasks(user_id=user_id)
     updated_habit_ids, updated_task_ids = updated_habit_tasks_ids
 
-    # This allows us to rank tasks within each habit, which is necessary to identify
     # The first failed task for each habit is used later to correctly identify
     # when the user breaks a Habit streak.
     first_failed_tasks = extract_first_failed_task(updated_task_ids)
@@ -356,3 +369,4 @@ def update_user_activity(user_id):
     # Update achievements if failed task
     Achievement.update_achievements(first_failed_tasks)
     Streak.update_streak(updated_habit_ids)
+    Streak.objects.get(habit_id=56)
