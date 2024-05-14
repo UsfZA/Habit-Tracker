@@ -232,8 +232,8 @@ class Streak(models.Model):
 
         Notes
         -----
-        This method counts the number of completed tasks for the specified habit in the TaskTracker table 
-        and updates the num_of_completed_tasks attribute in the associated streak object.
+        This method counts the number of completed tasks for the specified habit in the TaskTracker 
+        table and updates the num_of_completed_tasks attribute in the associated streak object.
         """
         completed_num = TaskTracker.objects.filter(habit=habit, task_status='Completed').count()
         streak = habit.streak.first()

@@ -1,9 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 from habit.models import Habit
-import os
-from django.core.files import File
-from django.conf import settings
 
 
 

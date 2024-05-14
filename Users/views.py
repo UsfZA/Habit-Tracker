@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .forms import UserRegisterForm
 from django.contrib.auth.decorators import login_required
+from .forms import UserRegisterForm
 from .models import Profile
 
 def register(request):
@@ -24,7 +24,7 @@ def register(request):
         The HTTP response object.
 
     """
-    if request.method == 'POST':   
+    if request.method == 'POST':
         form = UserRegisterForm(request.POST)
         if form.is_valid():
             form.save()

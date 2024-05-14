@@ -203,7 +203,7 @@ def calculate_progress(habits):
     habits : QuerySet
         A queryset containing active habits.
 
-    """   
+    """
     # Calculate progress percentage for each active habit
     for habit in habits:
         if habit.num_of_tasks > 0:
@@ -263,7 +263,7 @@ def calculate_score(completed_tasks, failed_tasks, longest_streak, current_strea
 
     """
     score = (weights['completed_tasks'] * completed_tasks +
-             weights['failed_tasks'] * failed_tasks + 
+             weights['failed_tasks'] * failed_tasks +
              weights['longest_streak'] * longest_streak +
              weights['current_streak'] *current_streak
              ) / (num_of_tasks * duration)
@@ -321,20 +321,22 @@ def rank_habits(weights, period):
 
     prefetch_streaks = Prefetch('streak', queryset=Streak.objects.all())
     # Fetch habits with prefetching of related streaks
-    habits = Habit.objects.prefetch_related(prefetch_streaks).filter(period=period)  # creation_time__range=(last_month, now)
+    habits = Habit.objects.prefetch_related(prefetch_streaks).filter(period=period,
+                                                creation_time__range=(last_month, now))
 
     for habit in habits:
         streak = habit.streak.latest('id')
         if streak is not None:
             num_of_tasks = habit.num_of_tasks
             completed_tasks = streak.num_of_completed_tasks
-            failed_tasks = streak.num_of_failed_tasks 
+            failed_tasks = streak.num_of_failed_tasks
             longest_streak = streak.longest_streak
             current_streak = streak.current_streak
             # subtract one day from creation time to avoid ZeroDivisionError
             duration = (now - (habit.creation_time - timedelta(days=1))).days
 
-            score = calculate_score(completed_tasks, failed_tasks, longest_streak, current_streak, num_of_tasks, duration, weights)
+            score = calculate_score(completed_tasks, failed_tasks, longest_streak,
+                                    current_streak, num_of_tasks, duration, weights)
 
             scores.append(score)
         else:
@@ -394,7 +396,7 @@ def extract_first_failed_task(updated_task_ids):
 
     # Fetch the first failed task for each habit using the annotated minimum task number
     first_failed_tasks = TaskTracker.objects.filter(
-        id__in=updated_task_ids, 
+        id__in=updated_task_ids,
         task_number__in=min_task_numbers.values('min_task_number')
         ).order_by('habit_id')
 
@@ -416,9 +418,11 @@ def update_user_activity(user_id):
 
     Notes
     -----
-    This function updates the user's activity by first updating task statuses from 'in progress' to 'failed' 
-    and retrieving their IDs. It then extracts the first failed task for each habit to identify when the user 
-    breaks a habit streak. Achievements are updated based on failed tasks, and streaks are updated for relevant habits.
+    This function updates the user's activity by first updating task statuses from 
+    'in progress' to 'failed' and retrieving their IDs. It then extracts the first 
+    failed task for each habit to identify when the user breaks a habit streak. 
+    Achievements are updated based on failed tasks, and streaks are updated for 
+    relevant habits.
     """
 
     # Update tasks statuses from in progress to failed and get their ids
@@ -428,7 +432,7 @@ def update_user_activity(user_id):
     # The first failed task for each habit is used later to correctly identify
     # when the user breaks a Habit streak.
     first_failed_tasks = extract_first_failed_task(updated_task_ids)
-    
+
     # Update achievements if failed task
     Achievement.update_achievements(first_failed_tasks)
     Streak.update_streak(updated_habit_ids)
