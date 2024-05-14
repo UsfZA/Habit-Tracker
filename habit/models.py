@@ -161,7 +161,6 @@ class TaskTracker(models.Model):
                 - A list of habit IDs that have tasks updated to 'Failed'.
                 - A list of task IDs that have been updated to 'Failed'.
         """
-        
         updated_habit_ids = []
         updated_task_ids = []
         tasks_to_update = cls.objects.filter(habit__user_id=user_id,
@@ -216,15 +215,30 @@ class Streak(models.Model):
         if self.current_streak > self.longest_streak:
             self.longest_streak = self.current_streak
         super().save(*args, **kwargs)
-    
+
     @classmethod
     def num_completed_tasks(cls, habit):
+        """
+        Update the number of completed tasks for a habit and update the streak.
+
+        Parameters
+        ----------
+        habit : Habit
+            The habit for which the number of completed tasks is to be updated.
+
+        Returns
+        -------
+        None
+
+        Notes
+        -----
+        This method counts the number of completed tasks for the specified habit in the TaskTracker table 
+        and updates the num_of_completed_tasks attribute in the associated streak object.
+        """
         completed_num = TaskTracker.objects.filter(habit=habit, task_status='Completed').count()
         streak = habit.streak.first()
         streak.num_of_completed_tasks = completed_num
         streak.save()
-
-
 
     @classmethod
     def update_streak(cls, habit_ids):
@@ -268,7 +282,6 @@ class Achievement(models.Model):
     title = models.CharField(max_length=255)
     date = models.DateTimeField(null=True, blank=True)
 
-    
 
     @classmethod
     def update_achievements(cls, tasks):
@@ -307,8 +320,10 @@ class Achievement(models.Model):
         """
         Reward streaks when they reach predefined milestones.
 
-        This method rewards streaks when they achieve specific milestones, such as 7, 14, or 30 days.
-        It creates Achievement instances for the specified habit when the streak reaches each milestone.
+        This method rewards streaks when they achieve specific milestones, 
+        such as 7, 14, or 30 days.
+        It creates Achievement instances for the specified habit when the 
+        streak reaches each milestone.
 
         Parameters
         ----------
@@ -327,33 +342,33 @@ class Achievement(models.Model):
             title = '14-Day Streak'
             cls.objects.create(habit=habit, date=timezone.now(), title=title,
                                streak_length=streak.current_streak)
-        # if streak.current_streak // habit.frequency == 30 and habit.period == 'daily':
-        #     title = '30-Day Streak'
-        #     cls.objects.create(habit=habit, date=timezone.now(), title=title,
-        #                        streak_length=streak.current_streak)
-            
-        # if streak.current_streak // habit.frequency == 1  and habit.period == 'weekly':
-        #     title = '1-Week Streak'
-        #     cls.objects.create(habit=habit, date=timezone.now(), title=title,
-        #                        streak_length=streak.current_streak)
-        # if streak.current_streak // habit.frequency == 2 and habit.period == 'weekly':
-        #     title = "2-Week's Streak"
-        #     cls.objects.create(habit=habit, date=timezone.now(), title=title,
-        #                        streak_length=streak.current_streak)
-        # if streak.current_streak // habit.frequency == 4 and habit.period == 'weekly':
-        #     title = "4-Week's Streak"
-        #     cls.objects.create(habit=habit, date=timezone.now(), title=title,
-        #                        streak_length=streak.current_streak)
-            
-        # if streak.current_streak // habit.frequency == 1  and habit.period == 'monthly':
-        #     title = '1-Month Streak'
-        #     cls.objects.create(habit=habit, date=timezone.now(), title=title,
-        #                        streak_length=streak.current_streak)
-        # if streak.current_streak // habit.frequency == 2 and habit.period == 'monthly':
-        #     title = "2-Month's Streak"
-        #     cls.objects.create(habit=habit, date=timezone.now(), title=title,
-        #                        streak_length=streak.current_streak)
-        # if streak.current_streak // habit.frequency == 4 and habit.period == 'monthly':
-        #     title = "4-Month's Streak"
-        #     cls.objects.create(habit=habit, date=timezone.now(), title=title,
-        #                        streak_length=streak.current_streak)
+        if streak.current_streak // habit.frequency == 30 and habit.period == 'daily':
+            title = '30-Day Streak'
+            cls.objects.create(habit=habit, date=timezone.now(), title=title,
+                               streak_length=streak.current_streak)
+
+        if streak.current_streak // habit.frequency == 1  and habit.period == 'weekly':
+            title = '1-Week Streak'
+            cls.objects.create(habit=habit, date=timezone.now(), title=title,
+                               streak_length=streak.current_streak)
+        if streak.current_streak // habit.frequency == 2 and habit.period == 'weekly':
+            title = "2-Week's Streak"
+            cls.objects.create(habit=habit, date=timezone.now(), title=title,
+                               streak_length=streak.current_streak)
+        if streak.current_streak // habit.frequency == 4 and habit.period == 'weekly':
+            title = "4-Week's Streak"
+            cls.objects.create(habit=habit, date=timezone.now(), title=title,
+                               streak_length=streak.current_streak)
+
+        if streak.current_streak // habit.frequency == 1  and habit.period == 'monthly':
+            title = '1-Month Streak'
+            cls.objects.create(habit=habit, date=timezone.now(), title=title,
+                               streak_length=streak.current_streak)
+        if streak.current_streak // habit.frequency == 2 and habit.period == 'monthly':
+            title = "2-Month's Streak"
+            cls.objects.create(habit=habit, date=timezone.now(), title=title,
+                               streak_length=streak.current_streak)
+        if streak.current_streak // habit.frequency == 4 and habit.period == 'monthly':
+            title = "4-Month's Streak"
+            cls.objects.create(habit=habit, date=timezone.now(), title=title,
+                               streak_length=streak.current_streak)

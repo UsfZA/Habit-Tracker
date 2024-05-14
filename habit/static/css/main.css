@@ -43,17 +43,6 @@ ul {
 }
 
 
-.account-img {
-    height: 125px;
-    width: 125px;
-    margin-right: 20px;
-    margin-bottom: 16px;
-}
-
-.account-heading {
-    font-size: 2.5rem;
-}
-
 .small-label {
     font-size: 0.8rem; 
 }
@@ -367,12 +356,6 @@ input[type="password"] {
 }
 
 
-
-
-
-
-
-
 .completed-label {
     text-align: center;
     font-weight: bold;
@@ -406,8 +389,8 @@ input[type="password"] {
 
 .vertical-line {
     border-left: 1px solid #1594de;
-    height: 100%; /* Adjust the height of the vertical line */
-    margin: 0 10px; /* Adjust the spacing between sections */
+    height: 100%;
+    margin: 0 10px;
 }
 
 

@@ -3,8 +3,6 @@ from django.contrib import messages
 from .forms import UserRegisterForm
 from django.contrib.auth.decorators import login_required
 from .models import Profile
-# from .forms import ProfileUpdateForm
-
 
 def register(request):
     """
@@ -62,13 +60,4 @@ def profile(request):
     if request.method == 'GET':
         profile_instance, create = Profile.objects.get_or_create(user=request.user)
 
-    # if request.method == 'POST':
-    #     profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
-    #     if profile_form.is_valid():
-    #         profile_form.save()
-    #         messages.success(request, 'Your profile picture has been updated!')
-    #         return redirect('profile')
-    # else:
-    #     profile_form = ProfileUpdateForm(instance=request.user.profile)
-
-    return render(request, 'Users/profile.html', {'profile': profile_instance}) # , 'profile_form': profile_form
+    return render(request, 'Users/profile.html', {'profile': profile_instance})

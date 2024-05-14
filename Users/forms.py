@@ -22,18 +22,4 @@ class UserRegisterForm(UserCreationForm):
         model = User
         fields = ['username', 'first_name', 'last_name', 'email', 'password1', 'password2']
 
-
-# class ProfileUpdateForm(forms.ModelForm):
-#     """
-#     Form for updating user profile information.
-
-#     """
-
-#     class Meta:
-#         """
-#         Meta class for defining the model and fields for the ProfileUpdateForm.
-#         """
-#         model = Profile
-#         fields = ['image']
-
     

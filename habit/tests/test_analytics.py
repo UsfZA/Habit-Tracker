@@ -1,14 +1,9 @@
-import pytest
 from django.test import TestCase
 from django.utils import timezone
 from datetime import datetime
-from habit.models import Habit, TaskTracker, Streak, Achievement
+from habit.models import Habit, Streak
 from habit.analytics import rank_habits
 from django.contrib.auth.models import User
-from django.db.models import Min, Prefetch
-
-
-
 
 
 class AnalyticTestCase(TestCase):
@@ -111,6 +106,3 @@ class AnalyticTestCase(TestCase):
         assert ranked_habits[0][1] == 1.3887301496588267
         assert ranked_habits[1][1] == -0.4629100498862762
         assert ranked_habits[2][1] == -0.9258200997725524
-
-    def test_progress_calculation(self):
-        pass

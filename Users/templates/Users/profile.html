@@ -1,5 +1,3 @@
-<!-- Users/templates/Users/profile.html -->
-
 {% extends 'base.html' %}
 {% load static %}
 
@@ -10,16 +8,12 @@
                 <div class="card add-habit-card">
                     <h1 class="card-header text-center">User Profile</h1>
                     <div class="card-body">
-                        <!-- <div class="text-center">
-                            <img src="{{ user.profile.image.url }}" alt="Profile Picture" class="img-fluid rounded-circle mb-3">
-                        </div> -->
                         <p><i class="bi bi-person"></i> <strong>Full Name:</strong> {{ profile.user.first_name }} {{ profile.user.last_name }}</p>
                         {% if profile.email %}
                             <p><i class="bi bi-envelope"></i> <strong>Email:</strong> {{ profile.email }}</p>
                         {% endif %}
                         <p><i class="bi bi-calendar"></i> <strong>Joined:</strong> {{ profile.user.date_joined | date:"D, d M Y H:i:s" }}</p>
 
-                        <!-- Add more details or icons as needed -->
                         <div class="form-group row">
                             <div class="col-sm-7 offset-sm-1">
                                 <a class="btn btn-primary btn-block" href="{% url 'habit-home' %}">Back to Habit Dashboard</a>

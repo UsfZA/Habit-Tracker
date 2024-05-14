@@ -1,6 +1,5 @@
 import json
 from django.http import JsonResponse
-from django.http.response import HttpResponse as HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.utils import timezone
@@ -34,7 +33,6 @@ class HabitView(View):
         if not request.user.is_authenticated:
             return redirect('login')
         return super().dispatch(request, *args, **kwargs)
-    
 
     def get(self, request, *args, **kwargs):
         """
@@ -355,7 +353,7 @@ class HabitAnalysis(View):
         if not request.user.is_authenticated:
             return redirect('login')
         return super().dispatch(request, *args, **kwargs)
-    
+
     def get(self, request, *args, **kwargs):
         """
         Handles GET requests for habit analysis.
@@ -390,7 +388,7 @@ class HabitAnalysis(View):
 
         # Retrieve the habit with the current longest streak
         longest_current_all_streak = longest_current_streak_over_all_habits()
-        # Retrieve the habit with longest streak 
+        # Retrieve the habit with longest streak
         longest_all_streak = longest_streak_over_all_habits()
 
         weights = {
@@ -449,17 +447,17 @@ class HabitAnalysis(View):
         The ID of the selected habit is obtained from the request payload.
         """
         selected_value = request.POST.get('selectedValue')
-        
+
         # Retrieve the habit object with related streak using prefetch_related
         habit = Habit.objects.prefetch_related('streak').get(id=selected_value)
-        
+
         # Serialize the habit object along with related streak data
         habit_data = serializers.serialize('json', [habit])
-        
+
         # Convert serialized data to Python dictionary
         habit_dict = json.loads(habit_data)[0]['fields']
 
         # Add streak data to habit dictionary
         habit_dict['streak'] = list(habit.streak.values())
-        
+
         return JsonResponse(habit_dict, safe=False)

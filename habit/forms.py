@@ -10,16 +10,12 @@ Classes:
 
 """
 
-
-
 from django import forms
 from django.core.validators import MinValueValidator
-from django.utils import timezone
 from .models import Habit
 from .utils import convert_goal_to_days
 
-from django import forms
-from .models import Habit
+
 
 class HabitForm(forms.ModelForm):
     """
@@ -56,8 +52,6 @@ class HabitForm(forms.ModelForm):
         widget=forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'start-date-field'}),
         required=True
     )
-
-    
 
     def clean_goal(self):
         """
@@ -118,4 +112,3 @@ class HabitForm(forms.ModelForm):
         """
         model = Habit
         fields = ['name', 'frequency', 'period', 'goal', 'notes', 'start_date']
-

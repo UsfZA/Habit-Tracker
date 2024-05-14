@@ -11,15 +11,12 @@ and analysis of habit data.
 
 """
 
-
-
 from datetime import timedelta
-from django.utils import timezone
-from .models import TaskTracker, Habit, Streak
 from functools import partial
-from habit.models import TaskTracker, Achievement
-from django.db.models import Min, Prefetch
 import numpy as np
+from django.utils import timezone
+from django.db.models import Min, Prefetch
+from habit.models import TaskTracker, Habit, Streak, Achievement
 
 
 def all_tracked_habits(user_id):
@@ -122,7 +119,6 @@ def longest_streak_for_habit(id):
 
     """
     return Habit.objects.prefetch_related('streak').get(id=id)
-    
 
 
 def due_today_tasks(user_id):
@@ -177,7 +173,23 @@ def active_tasks(user_id):
     return tasks
 
 def upcoming_tasks(user_id):
-    tasks = TaskTracker.objects.filter(habit__user_id=user_id, start_date__gte=timezone.now()+timedelta(hours=1), task_number=1)
+    """
+    Retrieve upcoming tasks for a given user.
+
+    Parameters
+    ----------
+    user_id : int
+        The ID of the user for whom upcoming tasks are to be retrieved.
+
+    Returns
+    -------
+    queryset
+        A queryset containing upcoming tasks for the specified user, 
+        starting at least one hour from the current time.
+    """
+    tasks = TaskTracker.objects.filter(habit__user_id=user_id,
+                                       start_date__gte=timezone.now()+timedelta(hours=1),
+                                       task_number=1)
     return tasks
 
 
@@ -191,8 +203,7 @@ def calculate_progress(habits):
     habits : QuerySet
         A queryset containing active habits.
 
-    """
-    
+    """   
     # Calculate progress percentage for each active habit
     for habit in habits:
         if habit.num_of_tasks > 0:
@@ -203,12 +214,30 @@ def calculate_progress(habits):
             habit.progress_percentage = 0.0
 
 def num_inprogress_tasks(habit):
+    """
+    Update the number of tasks in progress for a habit.
+
+    Parameters
+    ----------
+    habit : Habit
+        The habit for which the number of in-progress tasks is to be updated.
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    This function counts the number of tasks in progress for the specified 
+    habit in the TaskTracker table and updates the in_progress attribute of 
+    the habit object accordingly.
+    """
     in_progress_num = TaskTracker.objects.filter(habit=habit, task_status='In progress').count()
     habit.in_progress = in_progress_num
 
 
-
-def calculate_score(completed_tasks, failed_tasks, longest_streak, current_streak, num_of_tasks, duration, weights):
+def calculate_score(completed_tasks, failed_tasks, longest_streak, current_streak,
+                    num_of_tasks, duration, weights):
     """
     Calculate the score for a habit based on various factors and weights.
 
@@ -282,7 +311,8 @@ def rank_habits(weights, period):
     Returns
     -------
     list
-        A list of tuples containing habit objects and their corresponding normalized scores, ranked in descending order.
+       A list of tuples containing habit objects and their corresponding normalized scores, 
+       ranked in descending order.
 
     """
     scores = []
@@ -317,6 +347,26 @@ def rank_habits(weights, period):
     return ranked_habits
 
 def all_completed_habits(user_id):
+    """
+    Retrieve all completed habits for a given user.
+
+    Parameters
+    ----------
+    user_id : int
+        The ID of the user for whom completed habits are to be retrieved.
+
+    Returns
+    -------
+    queryset
+        A queryset containing all completed habits for the specified user.
+        
+    Notes
+    -----
+    This function prefetches streak information for each habit and filters the habits
+    based on the user ID and completion date.
+    It returns a queryset containing all completed habits for the specified user, where the 
+    habit completion date is earlier than the current time.
+    """
     prefetch_streaks = Prefetch('streak', queryset=Streak.objects.all())
     # num_of_tasks = F'streak.num_of_completed_tasks' + F'streak.num_of_failed_tasks',
     return Habit.objects.prefetch_related(prefetch_streaks).filter(user_id=user_id, completion_date__lt=timezone.now())
@@ -353,16 +403,23 @@ def extract_first_failed_task(updated_task_ids):
 
 def update_user_activity(user_id):
     """
-
+    Update user activity including tasks, achievements, and streaks.
 
     Parameters
     ----------
     user_id : int
-        The ID of the user for whom tasks and achievements should be updated.
+        The ID of the user whose activity is to be updated.
 
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    This function updates the user's activity by first updating task statuses from 'in progress' to 'failed' 
+    and retrieving their IDs. It then extracts the first failed task for each habit to identify when the user 
+    breaks a habit streak. Achievements are updated based on failed tasks, and streaks are updated for relevant habits.
     """
-    # Update tasks and habits statuses from upcoming to in progress
-
 
     # Update tasks statuses from in progress to failed and get their ids
     updated_habit_tasks_ids = TaskTracker.update_failed_tasks(user_id=user_id)
