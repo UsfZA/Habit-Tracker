@@ -1,7 +1,7 @@
 # Django Habit Tracker
 
 Django Habit Tracker is a web application designed to help users track their habits, manage tasks, and monitor progress towards their goals.
-This README provides an overview of the project's features, installation instructions, usage guidelines, and contribution guidelines.
+This README provides an overview of the project's features, installation instructions, usage guidelines.
 
 # Installation #
 

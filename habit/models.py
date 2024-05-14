@@ -75,7 +75,6 @@ class Habit(models.Model):
         super().save(*args, **kwargs)
 
 
-
 class TaskTracker(models.Model):
     """
     Represents a tracker for habit-related tasks.
@@ -247,7 +246,6 @@ class Streak(models.Model):
             habit_streak.num_of_failed_tasks += 1
             habit_streak.current_streak = 0
             habit_streak.save()
-
 
 
 class Achievement(models.Model):

@@ -113,7 +113,7 @@ class HabitView(View):
         # If an error occurs or the task is not found, redirect to habit home page
         return redirect('habit-home')
 
-        
+
 
 class HabitManagerView(View):
     """
@@ -337,8 +337,7 @@ class HabitManagerView(View):
         return render(request, 'habit_details.html', context)
 
 
-    
-        
+
 class HabitAnalysis(View):
     """
     View class for managing habits.
@@ -398,6 +397,7 @@ class HabitAnalysis(View):
             'completed_tasks': -0.2,
             'failed_tasks': 0.8,
             'longest_streak': -0.2,
+            'current_streak': -0.1
         }
 
         daily_struggled_most = rank_habits(weights, 'daily')[0][0]

@@ -290,5 +290,3 @@ class AchievementTestCase(TestCase):
         assert achievements[2].streak_length == 7
         assert achievements[3].title == '14-Day Streak'
         assert achievements[3].streak_length == 14
-
-

@@ -208,7 +208,7 @@ def num_inprogress_tasks(habit):
 
 
 
-def calculate_score(completed_tasks, failed_tasks, longest_streak, num_of_tasks, duration, weights):
+def calculate_score(completed_tasks, failed_tasks, longest_streak, current_streak, num_of_tasks, duration, weights):
     """
     Calculate the score for a habit based on various factors and weights.
 
@@ -235,7 +235,8 @@ def calculate_score(completed_tasks, failed_tasks, longest_streak, num_of_tasks,
     """
     score = (weights['completed_tasks'] * completed_tasks +
              weights['failed_tasks'] * failed_tasks + 
-             weights['longest_streak'] * longest_streak
+             weights['longest_streak'] * longest_streak +
+             weights['current_streak'] *current_streak
              ) / (num_of_tasks * duration)
     return score
 
@@ -289,21 +290,26 @@ def rank_habits(weights, period):
     last_month = now - timedelta(days=30)
 
     prefetch_streaks = Prefetch('streak', queryset=Streak.objects.all())
-#  creation_time__range=(last_month, now)
-    habits = Habit.objects.prefetch_related(prefetch_streaks).filter(period=period)
+    # Fetch habits with prefetching of related streaks
+    habits = Habit.objects.prefetch_related(prefetch_streaks).filter(period=period)  # creation_time__range=(last_month, now)
 
     for habit in habits:
-        streak = habit.streak.first()
-        num_of_tasks = habit.num_of_tasks
-        completed_tasks = streak.num_of_completed_tasks
-        failed_tasks = streak.num_of_failed_tasks 
-        longest_streak = streak.longest_streak
-        # subtract one day from creation time to avoid ZeroDivisionError
-        duration = (now - (habit.creation_time - timedelta(days=1))).days
- 
-        score = calculate_score(completed_tasks, failed_tasks, longest_streak, num_of_tasks, duration, weights)
+        streak = habit.streak.latest('id')
+        if streak is not None:
+            num_of_tasks = habit.num_of_tasks
+            completed_tasks = streak.num_of_completed_tasks
+            failed_tasks = streak.num_of_failed_tasks 
+            longest_streak = streak.longest_streak
+            current_streak = streak.current_streak
+            # subtract one day from creation time to avoid ZeroDivisionError
+            duration = (now - (habit.creation_time - timedelta(days=1))).days
 
-        scores.append(score)
+            score = calculate_score(completed_tasks, failed_tasks, longest_streak, current_streak, num_of_tasks, duration, weights)
+
+            scores.append(score)
+        else:
+            pass
+
 
     normalized_scores = normalize_scores(scores)
     ranked_habits = sorted(zip(habits, normalized_scores), key=lambda x: x[1], reverse=True)

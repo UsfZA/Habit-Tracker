@@ -136,3 +136,5 @@ local_settings.py
 Dockerfile
 docker-compose.yml
 secrets
+
+habit/tests/py.py
