@@ -1,15 +1,15 @@
-import pytest
-from django.contrib.auth.models import User
-from habit.models import Habit, TaskTracker, Streak, Achievement
-from habit.analytics import extract_first_failed_task
 from datetime import timedelta
 from django.utils import timezone
-from freezegun import freeze_time
+from django.contrib.auth.models import User
 from django.test import TestCase
+from freezegun import freeze_time
+from habit.models import Habit, TaskTracker, Streak, Achievement
+from habit.analytics import extract_first_failed_task
+
 
 class HabitTestCase(TestCase):
     """Test cases for the Habit model."""
-    
+
     @classmethod
     def setUpTestData(cls):
         """Set up test data."""
@@ -28,12 +28,12 @@ class HabitTestCase(TestCase):
         )
 
         cls.habit_2 = Habit.objects.create(
-            name='Exercise',
+            name='brush your teeth',
             frequency=2,
             period='weekly',
             goal=30,
             num_of_tasks=0,
-            notes='Regular exercise for fitness',
+            notes='Reminder to maintain oral hygiene by brushing teeth twice daily.',
             start_date=timezone.now(),
             user=cls.user_2
         )
@@ -53,14 +53,17 @@ class HabitTestCase(TestCase):
         assert self.habit_1.goal == 35
         assert self.habit_1.notes == 'Regular exercise for fitness'
         assert self.habit_1.user == self.user_1
+        assert self.habit_1.num_of_tasks == 10
+
 
         # Assertions for habit_2
-        assert self.habit_2.name == 'exercise'
+        assert self.habit_2.name == 'brush your teeth'
         assert self.habit_2.frequency == 2
         assert self.habit_2.period == 'weekly'
         assert self.habit_2.goal == 30
-        assert self.habit_2.notes == 'Regular exercise for fitness'
+        assert self.habit_2.notes == 'Reminder to maintain oral hygiene by brushing teeth twice daily.'
         assert self.habit_2.user == self.user_2
+        assert self.habit_2.num_of_tasks == 8
 
         # Check if num_of_tasks was calculated correctly
         expected_num_of_tasks_1 = (self.habit_1.goal // 7) * self.habit_1.frequency
@@ -84,21 +87,21 @@ class TaskTrackerTestCase(TestCase):
     def setUpTestData(cls):
         """Set up test data."""
         cls.user_1 = User.objects.create_user(username='test_user_1', password='123456')
-        cls.habit = Habit.objects.create(name='Exercise', frequency=1, period='daily', goal=3, num_of_tasks=0,
-                                          notes='Regular exercise for fitness', start_date=timezone.now(),
-                                          user=cls.user_1)
+        cls.habit = Habit.objects.create(name='Exercise', frequency=1, period='daily', goal=3,
+                                         num_of_tasks=0, notes='Regular exercise for fitness',
+                                         start_date=timezone.now(), user=cls.user_1)
 
     def test_task_creation(self):
         """Test creation of TaskTracker objects."""
         TaskTracker.create_tasks(self.habit)
         tasks = TaskTracker.objects.filter(habit=self.habit)
-        
+
         # Check if tasks were created for the habit
         assert tasks.exists()
-        
+
         # Check if the number of tasks created matches the habit's num_of_tasks
         assert tasks.count() == self.habit.num_of_tasks
-        
+
         # Check if the task numbers are assigned correctly
         for index, task in enumerate(tasks, start=1):
             assert task.task_number == index
@@ -155,14 +158,14 @@ class TaskTrackerTestCase(TestCase):
 
 class StreakTestCase(TestCase):
     """Test cases for the Streak model."""
-    
+
     @classmethod
     def setUpTestData(cls):
         """Set up test data."""
         cls.user_1 = User.objects.create_user(username='test_user_1', password='123456')
-        cls.habit = Habit.objects.create(name='Exercise', frequency=1, period='daily', goal=12, num_of_tasks=0,
-                                          notes='Regular exercise for fitness', start_date=timezone.now(),
-                                          user=cls.user_1)
+        cls.habit = Habit.objects.create(name='Exercise', frequency=1, period='daily',
+                                goal=12, num_of_tasks=0, notes='Regular exercise for fitness',
+                                start_date=timezone.now(), user=cls.user_1)
 
     def test_streak_creation_on_habit_creation(self):
         """Test streak creation upon habit creation."""
@@ -227,15 +230,18 @@ class AchievementTestCase(TestCase):
     def setUpTestData(cls):
         """Set up test data."""
         cls.user_1 = User.objects.create_user(username='test_user_1', password='123456')
-        cls.habit = Habit.objects.create(name='Exercise', frequency=1, period='daily', goal=30, num_of_tasks=0,
-                                          notes='Regular exercise for fitness', start_date=timezone.now(),
-                                          user=cls.user_1)
-    
-    def test_update_achievement_information(self):
+        cls.habit_1 = Habit.objects.create(name='Exercise', frequency=1, period='daily',
+                                goal=30, num_of_tasks=0, notes='Regular exercise for fitness',
+                                start_date=timezone.now(), user=cls.user_1)
+        cls.habit_2 = Habit.objects.create(name='read books', frequency=2, period='weekly',
+                                goal=30, num_of_tasks=0, notes='',
+                                start_date=timezone.now(), user=cls.user_1)
+
+    def test_update_daily_achievement_information(self):
         """Test updating streak information."""
-        TaskTracker.create_tasks(self.habit)
-        streak = Streak.objects.get(habit=self.habit)
-        tasks = TaskTracker.objects.filter(habit=self.habit)
+        TaskTracker.create_tasks(self.habit_1)
+        streak = Streak.objects.get(habit=self.habit_1)
+        tasks = TaskTracker.objects.filter(habit=self.habit_1)
 
         # Mark the first 7 tasks and task number 10 as completed
         for task in tasks:
@@ -246,7 +252,6 @@ class AchievementTestCase(TestCase):
                 streak.save()
                 Achievement.rewards_streaks(task.habit_id, streak)
 
-        
         # Freeze time to a date where tasks 9 and 10 are considered overdue
         frozen_time_1 = timezone.now() + timedelta(days=10)
         with freeze_time(frozen_time_1):
@@ -256,7 +261,7 @@ class AchievementTestCase(TestCase):
             Achievement.update_achievements(first_failed_tasks)
             streak.update_streak(updated_habit_ids)
             streak.refresh_from_db()
-        
+
         # Freeze time to a date where tasks 11 and 12 are considered overdue
         # test for avoiding repeated Break habit title
         frozen_time_2 = timezone.now() + timedelta(days=12)
@@ -270,16 +275,16 @@ class AchievementTestCase(TestCase):
 
         # test for 14 day and 7 day streak titles
         for task in tasks:
-            if 28 > task.task_number > 12:
+            if 12 < task.task_number < 28:
                 task.task_status = 'Completed'
                 streak.current_streak += 1
                 task.save()
                 streak.save()
                 Achievement.rewards_streaks(task.habit_id, streak)
 
-        achievements = Achievement.objects.filter(habit=self.habit)
+        achievements = Achievement.objects.filter(habit=self.habit_1)
         streak.refresh_from_db()
-        
+
         # assert that four achievement objects are created
         assert Achievement.objects.count() == 4
         assert achievements[0].title == '7-Day Streak'
@@ -290,3 +295,30 @@ class AchievementTestCase(TestCase):
         assert achievements[2].streak_length == 7
         assert achievements[3].title == '14-Day Streak'
         assert achievements[3].streak_length == 14
+
+    def test_update_weekly_achievement(self):
+        """Test updating streak information."""
+        TaskTracker.create_tasks(self.habit_2)
+        streak = Streak.objects.get(habit=self.habit_2)
+        tasks = TaskTracker.objects.filter(habit=self.habit_2)
+
+        # Mark the first 7 tasks and task number 10 as completed
+        for task in tasks:
+            if task.task_number <= 8:
+                task.task_status = 'Completed'
+                streak.current_streak += 1
+                task.save()
+                streak.save()
+                Achievement.rewards_streaks(task.habit_id, streak)
+
+        streak.refresh_from_db()
+        achievements = Achievement.objects.filter(habit=self.habit_2)
+
+        # assert that four achievement objects are created
+        assert Achievement.objects.count() == 3
+        assert achievements[0].title == '1-Week Streak'
+        assert achievements[0].streak_length == 2
+        assert achievements[1].streak_length == 4
+        assert achievements[1].title == "2-Week's Streak"
+        assert achievements[2].title == "4-Week's Streak"
+        assert achievements[2].streak_length == 8

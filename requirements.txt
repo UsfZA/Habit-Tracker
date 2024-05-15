@@ -10,3 +10,4 @@ typing_extensions==4.9.0
 tzdata==2023.3
 numpy==1.26.4
 pytest-django==4.8.0
+coverage==7.5.1

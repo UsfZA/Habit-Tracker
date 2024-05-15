@@ -1,16 +1,15 @@
-from habit.models import Habit
+from datetime import datetime
 import pytest
 from django.contrib.auth.models import User
-from habit.forms import HabitForm
-from datetime import datetime
 from django.utils import timezone
 from django.test import TestCase
+from habit.models import Habit
+from habit.forms import HabitForm
 
 
-
-class ViewTestCase(TestCase): 
+class ViewTestCase(TestCase):
     """Test cases for Views."""
-    
+
     @classmethod
     def setUpTestData(cls):
         """Set up test data."""
@@ -22,7 +21,8 @@ class ViewTestCase(TestCase):
     @pytest.mark.django_db
     def test_valid_habit_name(cls):
         start_date = timezone.make_aware(datetime(2024, 4, 19, 12, 0))
-        data = {'name': 'New Habit', 'frequency': -1, 'period': 'daily', 'goal': -7, 'notes': '', 'start_date': start_date}
+        data = {'name': 'New Habit', 'frequency': -1, 'period': 'daily', 
+                'goal': -7, 'notes': '', 'start_date': start_date}
         form = HabitForm(data=data)
         form.is_valid()
         assert form.is_valid_habit_name(cls.user) == True
@@ -47,7 +47,7 @@ class ViewTestCase(TestCase):
 
         # Check if form is invalid
         assert form.is_valid() == False
-        
+
         # Check if the form errors contain the expected error messages for negative frequency and goal
         assert 'frequency' in form.errors
         assert 'goal' in form.errors

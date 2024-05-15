@@ -334,32 +334,34 @@ class Achievement(models.Model):
         """
         habit = Habit.objects.get(pk=habit_id)  # Retrieve the Habit instance using the habit_id
 
-        if streak.current_streak // habit.frequency == 7 and habit.period == 'daily':
+        if streak.current_streak / habit.frequency == 7 and habit.period == 'daily':
             title = '7-Day Streak'
             cls.objects.create(habit=habit, date=timezone.now(), title=title,
                                streak_length=streak.current_streak)
-        if streak.current_streak // habit.frequency == 14 and habit.period == 'daily':
+        if streak.current_streak / habit.frequency == 14 and habit.period == 'daily':
             title = '14-Day Streak'
             cls.objects.create(habit=habit, date=timezone.now(), title=title,
                                streak_length=streak.current_streak)
-        if streak.current_streak // habit.frequency == 30 and habit.period == 'daily':
+        if streak.current_streak / habit.frequency == 30 and habit.period == 'daily':
             title = '30-Day Streak'
             cls.objects.create(habit=habit, date=timezone.now(), title=title,
                                streak_length=streak.current_streak)
 
-        if streak.current_streak // habit.frequency == 1  and habit.period == 'weekly':
+        # Weekly Achievements
+        if habit.period == 'weekly' and (streak.current_streak / habit.frequency) == 1 :
             title = '1-Week Streak'
             cls.objects.create(habit=habit, date=timezone.now(), title=title,
                                streak_length=streak.current_streak)
-        if streak.current_streak // habit.frequency == 2 and habit.period == 'weekly':
+        if (streak.current_streak / habit.frequency) == 2 and habit.period == 'weekly':
             title = "2-Week's Streak"
             cls.objects.create(habit=habit, date=timezone.now(), title=title,
                                streak_length=streak.current_streak)
-        if streak.current_streak // habit.frequency == 4 and habit.period == 'weekly':
+        if (streak.current_streak / habit.frequency) == 4 and habit.period == 'weekly':
             title = "4-Week's Streak"
             cls.objects.create(habit=habit, date=timezone.now(), title=title,
                                streak_length=streak.current_streak)
 
+        # Monthly Achievements
         if streak.current_streak // habit.frequency == 1  and habit.period == 'monthly':
             title = '1-Month Streak'
             cls.objects.create(habit=habit, date=timezone.now(), title=title,

@@ -1,9 +1,9 @@
+from datetime import datetime
 from django.test import TestCase
 from django.utils import timezone
-from datetime import datetime
+from django.contrib.auth.models import User
 from habit.models import Habit, Streak
 from habit.analytics import rank_habits
-from django.contrib.auth.models import User
 
 
 class AnalyticTestCase(TestCase):
