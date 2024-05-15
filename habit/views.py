@@ -398,9 +398,10 @@ class HabitAnalysis(View):
             'current_streak': -0.1
         }
 
-        daily_struggled_most = rank_habits(weights, 'daily')[0][0]
-        weekly_struggled_most = rank_habits(weights, 'weekly')[0][0]
+        daily_struggled_most = rank_habits(weights, 'daily')
+        weekly_struggled_most = rank_habits(weights, 'weekly')
 
+        print(weekly_struggled_most)
         calculate_progress(all_habits)
         calculate_progress(daily_habits)
         calculate_progress(weekly_habits)

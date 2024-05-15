@@ -93,16 +93,30 @@ class AnalyticTestCase(TestCase):
                                              longest_streak=4, current_streak=0)
 
 
-    def test_rank_habits_scores(self):
+    def test_rank_daily_habits_scores(self):
         # Define weights and period
         period = 'daily'
         weights = {'completed_tasks': -0.2, 'failed_tasks': 0.8, 'longest_streak': -0.2, 'current_streak': -0.1}            
         ranked_habits = rank_habits(weights=weights, period=period)
-        print(ranked_habits)
-        assert ranked_habits[0][0] == Habit.objects.get(pk=55) 
+
+        assert ranked_habits[0][0] == Habit.objects.get(pk=55)
         assert ranked_habits[1][0] == Habit.objects.get(pk=58)
         assert ranked_habits[2][0] == Habit.objects.get(pk=76)
 
         assert ranked_habits[0][1] == 1.3887301496588267
         assert ranked_habits[1][1] == -0.4629100498862762
         assert ranked_habits[2][1] == -0.9258200997725524
+
+    def test_rank_weekly_habits_scores(self):
+        # Define weights and period
+        period = 'weekly'
+        weights = {'completed_tasks': -0.2, 'failed_tasks': 0.8, 'longest_streak': -0.2, 'current_streak': -0.1}            
+        ranked_habits = rank_habits(weights=weights, period=period)
+
+        assert ranked_habits[0][0] == Habit.objects.get(pk=57)
+        assert ranked_habits[1][0] == Habit.objects.get(pk=56)
+        assert ranked_habits[2][0] == Habit.objects.get(pk=59)
+
+        assert ranked_habits[0][1] == 1.2634656762057948
+        assert ranked_habits[1][1] == -0.08151391459392247
+        assert ranked_habits[2][1] == -1.1819517616118722

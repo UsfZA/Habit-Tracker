@@ -77,19 +77,6 @@ def filter_habits_by_period(period, habits):
     return habits.filter(period=period)
 
 
-def longest_streak_over_all_habits():
-    """
-    Retrieve the habit ID of the habit with the longest streak from the Streak table.
-
-    Returns
-    -------
-    int
-        The habit ID of the habit with the longest streak.
-
-    """
-    return Habit.objects.filter(id=Streak.objects.order_by('-longest_streak').first().habit_id).prefetch_related('streak')
-
-
 def longest_current_streak_over_all_habits():
     """
     Retrieve the habit ID of the habit with the longest current streak from the Streak table.
@@ -100,8 +87,26 @@ def longest_current_streak_over_all_habits():
         The habit ID of the habit with the longest current streak.
 
     """
-    return Habit.objects.filter(id=Streak.objects.order_by('-current_streak').first().habit_id).prefetch_related('streak')
+    first_streak = Streak.objects.order_by('-current_streak').first()
+    if first_streak is None:
+        return Habit.objects.none()  # Return an empty queryset if no streaks are found
+    return Habit.objects.filter(id=first_streak.habit_id).prefetch_related('streak')
 
+
+def longest_streak_over_all_habits():
+    """
+    Retrieve the habit ID of the habit with the longest streak from the Streak table.
+
+    Returns
+    -------
+    int
+        The habit ID of the habit with the longest streak.
+
+    """
+    first_streak = Streak.objects.order_by('-longest_streak').first()
+    if first_streak is None:
+        return Habit.objects.none()  # Return an empty queryset if no streaks are found
+    return Habit.objects.filter(id=first_streak.habit_id).prefetch_related('streak')
 
 def longest_streak_for_habit(id):
     """
@@ -436,4 +441,3 @@ def update_user_activity(user_id):
     # Update achievements if failed task
     Achievement.update_achievements(first_failed_tasks)
     Streak.update_streak(updated_habit_ids)
-    Streak.objects.get(habit_id=56)
