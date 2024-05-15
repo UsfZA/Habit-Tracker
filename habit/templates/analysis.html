@@ -63,6 +63,7 @@
                         {% endfor %}
                     </div>
                 </div>
+                <!-- Display Most Struggled Daily Habit -->
                 <div id="d-struggled-most-active-habits" style="display: none;">
                     <div class="row">
                         <div class="col-md-6 mb-4">
@@ -102,7 +103,8 @@
                             </div>
                         </div>
                     </div>
-                </div>     
+                </div> 
+                <!-- Display Most Struggled Weekly Habit -->
                 <div id="w-struggled-most-active-habits" style="display: none;">
                     <div class="row">
                         <div class="col-md-6 mb-4">
@@ -265,7 +267,7 @@
 
                     // Send an AJAX request to retrieve data
                     $.ajax({
-                        url: '', // Replace with the actual URL endpoint
+                        url: '',
                         method: 'POST',
                         data: {
                             selectedValue: selectedValue,
@@ -276,8 +278,8 @@
 
                             if (data && data.streak && data.streak.length > 0) {
                                 var habitContainer = document.getElementById('habit-cards');
-                                habitContainer.innerHTML = ''; // Clear existing habit cards
-
+                                habitContainer.innerHTML = ''; 
+                                // Display data on card
                                 var card = document.createElement('div');
                                 card.classList.add('col-md-6', 'mb-4');
                                 card.innerHTML = `

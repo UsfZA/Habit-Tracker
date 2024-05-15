@@ -5,7 +5,6 @@
             <div class="card add-habit-card">
                 <h2 class="card-header text-center">Create a New Habit</h2>
                 <div class="card-body">
-                    <!-- Separate the select dropdown from the form -->
                     <div class="form-group row">
                         <label for="habitSelect" class="col-sm-3 col-form-label text-right">Select Habit:</label>
                         <div class="col-sm-9">
@@ -98,10 +97,9 @@
     <script>
         // Initialize Bootstrap Datepicker with dropdown option
         $(document).ready(function(){
-            console.log("Document ready function is being called."); // Added console.log() statement
             $('#startDateInput').datepicker({
                 autoclose: true,
-                format: 'yyyy-mm-dd', // Adjust the date format as needed
+                format: 'yyyy-mm-dd',
                 container: '#startDateBtn'
             });
         });
